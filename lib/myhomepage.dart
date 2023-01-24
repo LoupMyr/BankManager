@@ -15,12 +15,17 @@ class MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Qu'est ce que Bank Tracker ?"),
+            title: const Text(
+              "Qu'est ce que Bank Tracker ?",
+              textAlign: TextAlign.center,
+            ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: const <Widget>[
                   Text(
-                      "Bank Tracker vous permet de faire vos comptes rapidement et facilement et\n d'avoir une vue d'ensemble de vos dépenses intuitive."),
+                    "Bank Tracker vous permet de faire vos comptes rapidement et facilement et\nd'avoir une vue d'ensemble de vos dépenses simple et intuitive.",
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

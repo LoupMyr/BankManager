@@ -1,4 +1,5 @@
 import 'package:bank_tracker/ajoutPage.dart';
+import 'package:bank_tracker/detailsMoisPage.dart';
 import 'package:bank_tracker/graphePage.dart';
 import 'package:bank_tracker/myhomepage.dart';
 import 'package:bank_tracker/recapPage.dart';
@@ -30,6 +31,8 @@ class MyApp extends StatelessWidget {
               const GraphePage(title: "Bank Tracker - Graphes"),
           '/routeRecap': (BuildContext context) =>
               const RecapPage(title: "Bank Tracker - Recapitulatif"),
+          '/routeDetailsMois': (BuildContext context) =>
+              const DetailsMoisPage(title: "Bank Tracker - Details"),
         });
   }
 }

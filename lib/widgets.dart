@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Widgets {
   static Widget createDrawer(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.3,
+      width: MediaQuery.of(context).size.width * 0.5,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -12,6 +12,12 @@ class Widgets {
               color: Theme.of(context).primaryColor,
             ),
             child: const FlutterLogo(),
+          ),
+          ListTile(
+            title: const Text('Accueil'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/routeHome');
+            },
           ),
           ListTile(
             title: const Text('Graphes'),
