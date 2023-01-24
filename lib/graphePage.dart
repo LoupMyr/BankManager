@@ -1,4 +1,5 @@
 import 'package:bank_tracker/depensePerMonth.dart';
+import 'package:bank_tracker/strings.dart';
 import 'package:bank_tracker/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -19,20 +20,7 @@ class GraphePageState extends State<GraphePage> {
   Tools _tools = Tools();
   var _depenses;
   List<TotalPerMonth> _listTotal = List.empty(growable: true);
-  List<String> months = [
-    'Janvier',
-    'Fevrier',
-    'Mars',
-    'Avril',
-    'Mai',
-    'Juin',
-    'Juillet',
-    'Aout',
-    'Septembre',
-    'Octobre',
-    'Novembre',
-    'Decembre'
-  ];
+
   Future<String> recupDepenses() async {
     var response = await _tools.getDepenses();
     if (response.statusCode == 200) {
@@ -53,7 +41,7 @@ class GraphePageState extends State<GraphePage> {
           total = total + montant;
         }
       }
-      _listTotal.add(new TotalPerMonth(months[i - 1], total));
+      _listTotal.add(new TotalPerMonth(Strings.listMonths[i - 1], total));
     }
   }
 
