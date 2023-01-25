@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bank_tracker/class/depense.dart';
 import 'package:bank_tracker/class/depensePerCategories.dart';
 import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
@@ -24,19 +25,28 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
   var _categories;
   double _total = 0;
   String _date = '';
+  bool _hasDataBool = false;
+  bool _createOnce = false;
   final List<TotalPerCategories> _list = List.empty(growable: true);
+  ListView _listView = ListView(
+    shrinkWrap: true,
+    children: [Text('Sélectionner une catégorie pour plus d\'information.')],
+  );
 
   Future<String> recupDepenses() async {
     _depenses = await _tools.getDepensesByUserID();
     var responseC = await _tools.getCategories();
     if (responseC.statusCode == 200) {
       _categories = convert.jsonDecode(responseC.body);
+      _hasDataBool = true;
       createTab();
+      _createOnce = true;
     }
     return '';
   }
 
   void createTab() {
+    _list.clear();
     List<dynamic> tabEltMois = List.empty(growable: true);
     for (var elt in _depenses) {
       int moisElt = int.parse(
@@ -49,18 +59,58 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
     }
     for (var c in _categories['hydra:member']) {
       double totalCategorie = 0;
+      List<Depense> depenses = List.empty(growable: true);
       for (var elt in tabEltMois) {
         List<String> temp = elt['categorieActivite'].split('/');
         String idCategorie = temp[temp.length - 1];
         if (c['id'].toString() == idCategorie) {
           totalCategorie =
               totalCategorie + double.parse(elt['montant'].toString());
+          String? remarques;
+          try {
+            remarques = elt['remarques'];
+          } catch (e) {}
+          List<String> tempUser = elt['user'].split('/');
+          String idUser = temp[temp.length - 1];
+          depenses.add(Depense(
+              double.parse(elt['montant'].toString()),
+              elt['debiteur'],
+              elt['datePaiement'],
+              idCategorie,
+              remarques,
+              idUser));
         }
       }
       if (totalCategorie > 0) {
-        _list.add(TotalPerCategories(c['libelle'], totalCategorie));
+        _list.add(TotalPerCategories(c['libelle'], totalCategorie, depenses));
       }
     }
+  }
+
+  void updateColumn(TotalPerCategories categorie) {
+    List<Widget> tabChildren = List.empty(growable: true);
+    for (var depense in categorie.getDepenses()) {
+      tabChildren.add(
+        ListTile(
+          title: Text('-${depense.getMontant().toString()}€'),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(depense.getDebiteur()),
+              depense.getRemarques() != null
+                  ? Text(depense.getRemarques()!)
+                  : const Text('/'),
+            ],
+          ),
+        ),
+      );
+    }
+    setState(() {
+      _listView = ListView(
+        shrinkWrap: true,
+        children: tabChildren,
+      );
+    });
   }
 
   @override
@@ -69,11 +119,12 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
     return FutureBuilder(
         future: recupDepenses(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          List<Widget> children;
+          List<Widget> children = List.empty(growable: true);
           if (snapshot.hasData) {
-            children = [
-              const Padding(padding: EdgeInsets.only(top: 30)),
-              SfCircularChart(
+            if (_hasDataBool) {
+              children = [
+                const Padding(padding: EdgeInsets.only(top: 30)),
+                SfCircularChart(
                   annotations: <CircularChartAnnotation>[
                     CircularChartAnnotation(
                       widget: SizedBox(
@@ -105,6 +156,10 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
                   series: <CircularSeries<TotalPerCategories, String>>[
                     DoughnutSeries<TotalPerCategories, String>(
                       dataSource: _list,
+                      onPointTap: (pointInteractionDetails) {
+                        updateColumn(
+                            _list[pointInteractionDetails.pointIndex!]);
+                      },
                       xValueMapper: (TotalPerCategories data, index) =>
                           data.getCategorie(),
                       yValueMapper: (TotalPerCategories data, index) =>
@@ -115,9 +170,22 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
                           labelPosition: ChartDataLabelPosition.outside,
                           textStyle: TextStyle(fontWeight: FontWeight.bold)),
                       radius: '75',
-                    )
-                  ]),
-            ];
+                    ),
+                  ],
+                ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                Column(children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: SingleChildScrollView(
+                      child: _listView,
+                    ),
+                  ),
+                ]),
+              ];
+            } else {
+              recupDepenses();
+            }
           } else if (snapshot.hasError) {
             children = [
               const Icon(Icons.error_outline, color: Colors.red),

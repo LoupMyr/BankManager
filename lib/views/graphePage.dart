@@ -30,6 +30,7 @@ class GraphePageState extends State<GraphePage> {
   }
 
   void createTab() {
+    _listTotal.clear();
     for (int i = 1; i <= 12; i++) {
       double total = 0;
       for (var elt in _depenses) {
