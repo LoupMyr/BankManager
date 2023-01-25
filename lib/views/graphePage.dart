@@ -22,9 +22,8 @@ class GraphePageState extends State<GraphePage> {
   List<TotalPerMonth> _listTotal = List.empty(growable: true);
 
   Future<String> recupDepenses() async {
-    var response = await _tools.getDepenses();
-    if (response.statusCode == 200) {
-      _depenses = convert.jsonDecode(response.body);
+    _depenses = await _tools.getDepensesByUserID();
+    if (_depenses.isNotEmpty) {
       createTab();
     }
     return '';
@@ -33,7 +32,7 @@ class GraphePageState extends State<GraphePage> {
   void createTab() {
     for (int i = 1; i <= 12; i++) {
       double total = 0;
-      for (var elt in _depenses['hydra:member']) {
+      for (var elt in _depenses) {
         int mois = int.parse(
             DateFormat('MM').format(DateTime.parse(elt['datePaiement'])));
         double montant = double.parse(elt['montant'].toString());

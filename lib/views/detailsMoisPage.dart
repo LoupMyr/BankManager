@@ -18,19 +18,18 @@ class DetailsMoisPage extends StatefulWidget {
 }
 
 class DetailsMoisPageState extends State<DetailsMoisPage> {
-  Tools _tools = Tools();
+  final Tools _tools = Tools();
   int _idMois = -1;
   var _depenses;
   var _categories;
   double _total = 0;
   String _date = '';
-  List<TotalPerCategories> _list = List.empty(growable: true);
+  final List<TotalPerCategories> _list = List.empty(growable: true);
 
   Future<String> recupDepenses() async {
-    var responseD = await _tools.getDepenses();
+    _depenses = await _tools.getDepensesByUserID();
     var responseC = await _tools.getCategories();
-    if (responseD.statusCode == 200 && responseC.statusCode == 200) {
-      _depenses = convert.jsonDecode(responseD.body);
+    if (responseC.statusCode == 200) {
       _categories = convert.jsonDecode(responseC.body);
       createTab();
     }
@@ -39,7 +38,7 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
 
   void createTab() {
     List<dynamic> tabEltMois = List.empty(growable: true);
-    for (var elt in _depenses['hydra:member']) {
+    for (var elt in _depenses) {
       int moisElt = int.parse(
           DateFormat('MM').format(DateTime.parse(elt['datePaiement'])));
       if (moisElt == _idMois) {

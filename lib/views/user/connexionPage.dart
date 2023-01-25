@@ -35,7 +35,9 @@ class ConnexionPageState extends State<ConnexionPage> {
     if (response.statusCode == 200) {
       var data = convert.jsonDecode(response.body);
       String solde = data['data']['solde'].toString();
+      String id = data['data']['id'].toString();
       await Local.storage.write(key: 'token', value: data['token']);
+      await Local.storage.write(key: 'id', value: id);
       await Local.storage.write(key: 'prenom', value: data['data']['prenom']);
       await Local.storage.write(key: 'nom', value: data['data']['nom']);
       await Local.storage.write(key: 'roles', value: data['data']['roles'][0]);

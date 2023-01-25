@@ -1,3 +1,4 @@
+import 'package:bank_tracker/class/local.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -16,11 +17,29 @@ class Tools {
     );
   }
 
+  Future<List<dynamic>> getDepensesByUserID() async {
+    List<dynamic> tab = List.empty(growable: true);
+    String? idUser = await Local.storage.read(key: 'id');
+    var response = await getDepenses();
+    if (response.statusCode == 200) {
+      var depenses = convert.jsonDecode(response.body);
+      for (var elt in depenses['hydra:member']) {
+        List<String> temp = elt['user'].split('/');
+        String idUserElt = temp[temp.length - 1];
+        if (idUserElt == idUser) {
+          tab.add(elt);
+        }
+      }
+    }
+    return tab;
+  }
+
   //POST
 
   Future<http.Response> postDepense(double montant, String debiteur,
       String date, String idCategorie, String remarques) async {
     Map<String, dynamic> rem = {};
+    String? idUser = await Local.storage.read(key: 'id');
     if (remarques.isNotEmpty) {
       rem = {
         "remarques": remarques,
@@ -32,8 +51,8 @@ class Tools {
       "datePaiement": date,
       "categorieActivite": '/apiBank/public/api/categories/$idCategorie',
       ...rem,
+      "user": "/apiBank/public/api/users/${idUser!}"
     };
-    print(body);
     return await http.post(
       Uri.parse('https://s3-4428.nuage-peda.fr/apiBank/public/api/depenses'),
       headers: <String, String>{
