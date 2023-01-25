@@ -1,5 +1,6 @@
+import 'package:bank_tracker/class/local.dart';
 import 'package:flutter/material.dart';
-import 'package:bank_tracker/widgets.dart';
+import 'package:bank_tracker/class/widgets.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -41,13 +42,17 @@ class MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  void logout() async {
+    Local.storage.deleteAll();
+    Navigator.pushReplacementNamed(context, '/routeConnexion');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(centerTitle: true, title: Text(widget.title), actions: [
+        IconButton(onPressed: logout, icon: const Icon(Icons.logout_outlined)),
+      ]),
       drawer: Widgets.createDrawer(context),
       body: Center(
         child: Column(

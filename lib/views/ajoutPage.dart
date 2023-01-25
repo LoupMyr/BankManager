@@ -1,7 +1,7 @@
-import 'package:bank_tracker/decimalTextInputFormatter.dart';
-import 'package:bank_tracker/strings.dart';
-import 'package:bank_tracker/tools.dart';
-import 'package:bank_tracker/widgets.dart';
+import 'package:bank_tracker/class/decimalTextInputFormatter.dart';
+import 'package:bank_tracker/class/strings.dart';
+import 'package:bank_tracker/class/tools.dart';
+import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -79,7 +79,9 @@ class AjoutPageState extends State<AjoutPage> {
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
                     validator: (valeur) {
-                      if (valeur == null || valeur.isEmpty) {
+                      if (valeur == null ||
+                          valeur.isEmpty ||
+                          double.tryParse(valeur)! < 0) {
                         _montant = -1;
                       } else {
                         _montant = double.tryParse(valeur)!;

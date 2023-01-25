@@ -1,4 +1,4 @@
-import 'package:bank_tracker/widgets.dart';
+import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 
 class RecapPage extends StatefulWidget {

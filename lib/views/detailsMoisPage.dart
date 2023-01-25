@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:bank_tracker/depensePerCategories.dart';
-import 'package:bank_tracker/widgets.dart';
+import 'package:bank_tracker/class/depensePerCategories.dart';
+import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:bank_tracker/tools.dart';
+import 'package:bank_tracker/class/tools.dart';
 import 'dart:convert' as convert;
 import 'package:intl/intl.dart';
 

@@ -1,10 +1,10 @@
-import 'package:bank_tracker/depensePerMonth.dart';
-import 'package:bank_tracker/strings.dart';
-import 'package:bank_tracker/widgets.dart';
+import 'package:bank_tracker/class/depensePerMonth.dart';
+import 'package:bank_tracker/class/strings.dart';
+import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:bank_tracker/tools.dart';
+import 'package:bank_tracker/class/tools.dart';
 import 'dart:convert' as convert;
 import 'package:intl/intl.dart';
 

@@ -43,4 +43,35 @@ class Tools {
       body: convert.jsonEncode(body),
     );
   }
+
+  Future<http.Response> postUser(String email, String password, String nom,
+      String prenom, double solde) async {
+    return http.post(
+        Uri.parse('https://s3-4428.nuage-peda.fr/apiBank/public/api/users'),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: convert.jsonEncode(<String, dynamic>{
+          "email": email,
+          "roles": ['ROLE_USER'],
+          "password": password,
+          "nom": nom,
+          "prenom": prenom,
+          "dateInscription": DateTime.now().toString(),
+          "solde": solde
+        }));
+  }
+
+  Future<http.Response> authentication(String email, String password) async {
+    return http.post(
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/apiBank/public/api/authentication_token'),
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: convert.jsonEncode(
+            <String, dynamic>{"email": email, "password": password}));
+  }
 }

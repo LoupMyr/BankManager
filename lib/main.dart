@@ -1,8 +1,10 @@
-import 'package:bank_tracker/ajoutPage.dart';
-import 'package:bank_tracker/detailsMoisPage.dart';
-import 'package:bank_tracker/graphePage.dart';
-import 'package:bank_tracker/myhomepage.dart';
-import 'package:bank_tracker/recapPage.dart';
+import 'package:bank_tracker/views/ajoutPage.dart';
+import 'package:bank_tracker/views/detailsMoisPage.dart';
+import 'package:bank_tracker/views/graphePage.dart';
+import 'package:bank_tracker/views/myhomepage.dart';
+import 'package:bank_tracker/views/recapPage.dart';
+import 'package:bank_tracker/views/user/connexionPage.dart';
+import 'package:bank_tracker/views/user/inscriptionPage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,18 +23,22 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.red,
           primarySwatch: Colors.red,
         ),
-        home: const MyHomePage(title: 'Bank Tracker'),
+        home: const ConnexionPage(title: 'Connexion'),
         routes: <String, WidgetBuilder>{
           '/routeHome': (BuildContext context) =>
-              const MyHomePage(title: "Bank Tracker - Accueil"),
+              const MyHomePage(title: "Accueil"),
           '/routeAjout': (BuildContext context) =>
-              const AjoutPage(title: "Bank Tracker - Ajout"),
+              const AjoutPage(title: "Ajout dépense"),
           '/routeGraphe': (BuildContext context) =>
-              const GraphePage(title: "Bank Tracker - Graphes"),
+              const GraphePage(title: "Graphes"),
           '/routeRecap': (BuildContext context) =>
-              const RecapPage(title: "Bank Tracker - Recapitulatif"),
+              const RecapPage(title: "Recapitulatif"),
           '/routeDetailsMois': (BuildContext context) =>
-              const DetailsMoisPage(title: "Bank Tracker - Details"),
+              const DetailsMoisPage(title: "Details"),
+          '/routeConnexion': (BuildContext context) =>
+              const ConnexionPage(title: "Connexion"),
+          '/routeInscription': (BuildContext context) =>
+              const InscriptionPage(title: "Inscription"),
         });
   }
 }
