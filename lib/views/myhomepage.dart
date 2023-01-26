@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'package:bank_tracker/class/local.dart';
+import 'package:bank_tracker/class/tools.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_tracker/class/widgets.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -11,6 +15,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+  final Tools _tools = Tools();
+  String _solde = '';
+  List<dynamic> _list = List.empty(growable: true);
+
   Future<void> popUpInfo() async {
     return showDialog(
         context: context,
@@ -47,21 +55,128 @@ class MyHomePageState extends State<MyHomePage> {
     Navigator.pushReplacementNamed(context, '/routeConnexion');
   }
 
+  Future<String> recupInfos() async {
+    String? s = await Local.storage.read(key: 'solde');
+    _solde = s!;
+    var depenses = await _tools.getDepensesByUserID();
+    var rentrees = await _tools.getRentreesByUserID();
+    _list = depenses + rentrees;
+    if (_list.isNotEmpty) {
+      _list.sort((a, b) {
+        return DateTime.parse(b['datePaiement'])
+            .compareTo(DateTime.parse(a['datePaiement']));
+      });
+    }
+    return '';
+  }
+
+  List<Widget> buildListDepenses() {
+    List<Widget> body = List.empty(growable: true);
+    List<Widget> children = List.empty(growable: true);
+    if (_list.isNotEmpty) {
+      int nbIterations = 0;
+      if (_list.length >= 5) {
+        nbIterations = 5;
+      } else {
+        nbIterations = _list.length - 1;
+      }
+      for (int i = 0; i < nbIterations; i++) {
+        String remarques = '/';
+        String person = '';
+        String symbol = '-';
+        TextStyle textStyle = const TextStyle(color: Colors.red);
+        try {
+          remarques = _list[i]['remarques'];
+        } catch (e) {}
+        if (_list[i]['@type'] == "Rentree") {
+          person = _list[i]['crediteur'];
+          symbol = '+';
+          textStyle = const TextStyle(color: Colors.green);
+        } else {
+          person = _list[i]['debiteur'];
+        }
+        children.add(const Divider(
+          thickness: 2,
+        ));
+        children.add(
+          ListTile(
+            title: Text('$symbol ${_list[i]['montant'].toString()}€',
+                style: textStyle),
+            subtitle: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(DateFormat('dd-MM-yyyy')
+                        .format(DateTime.parse(_list[i]['datePaiement']))),
+                    Text(' $person', overflow: TextOverflow.fade),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(remarques, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      body = [
+        Container(
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: ListView(
+              shrinkWrap: true,
+              children: children,
+            ))
+      ];
+    } else {
+      body = [
+        const SizedBox(
+          child: Text('Aucune dépenses ou rentrée récentes'),
+        )
+      ];
+    }
+    return body;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(widget.title), actions: [
-        IconButton(onPressed: logout, icon: const Icon(Icons.logout_outlined)),
-      ]),
-      drawer: Widgets.createDrawer(context),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: popUpInfo, child: Icon(Icons.info_outline)),
+    return FutureBuilder(
+      future: recupInfos(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Column col = Column();
+        FloatingActionButton fab =
+            FloatingActionButton(onPressed: popUpInfo, child: null);
+        if (snapshot.hasData) {
+          fab = FloatingActionButton(
+              onPressed: popUpInfo, child: const Icon(Icons.info_outline));
+          col = Column(children: buildListDepenses());
+        } else if (snapshot.hasError) {
+          col = Column(children: const [
+            Icon(Icons.error_outline, color: Color.fromARGB(255, 255, 17, 0)),
+          ]);
+        } else {
+          col = Column(children: [
+            SpinKitChasingDots(size: 150, color: Colors.red.shade300),
+          ]);
+        }
+        return Scaffold(
+          appBar:
+              AppBar(centerTitle: true, title: Text(widget.title), actions: [
+            IconButton(
+                onPressed: logout, icon: const Icon(Icons.logout_outlined)),
+          ]),
+          drawer: Widgets.createDrawer(context),
+          body: SingleChildScrollView(
+            child: Center(
+              child: col,
+            ),
+          ),
+          floatingActionButton: fab,
+        );
+      },
     );
   }
 }

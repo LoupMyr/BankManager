@@ -56,7 +56,6 @@ class GraphePageState extends State<GraphePage> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 1.5,
                   child: SfCartesianChart(
                     title: ChartTitle(
                         text: 'Vos dépenses de 2023',

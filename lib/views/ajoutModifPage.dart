@@ -24,6 +24,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   );
   //*************************/
   String _dateDepense = '';
+  String _dateDepensePrint = '';
   String _dropdownValueCategorieDepense = 'Sélectionner une catégorie';
   int _idSelectCategorieDepense = -1;
   Text _labelErrCategorieDepense = const Text('');
@@ -32,6 +33,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   String _remarquesDepense = '';
   //*************************/
   String _dateRentree = '';
+  String _dateRentreePrint = '';
   String _dropdownValueCategorieRentree = 'Sélectionner une catégorie';
   int _idSelectCategorieRentree = -1;
   Text _labelErrCategorieRentree = const Text('');
@@ -193,16 +195,20 @@ class AjoutModifPageState extends State<AjoutModifPage> {
                     firstDate: DateTime(2000),
                     lastDate: DateTime(2101));
                 if (pickedDate != null) {
+                  pickedDate.add(const Duration(hours: 1));
                   String formattedDate =
-                      DateFormat('dd-MM-yyyy').format(pickedDate);
+                      DateFormat('dd-MM-yyyy hh:mm:ss').format(pickedDate);
+
                   setState(() {
                     _dateDepense = formattedDate;
+                    _dateDepensePrint =
+                        DateFormat('dd-MM-yyyy').format(pickedDate);
                   });
                 }
               },
               icon: const Icon(Icons.calendar_today),
             ),
-            Text(_dateDepense),
+            Text(_dateDepensePrint),
           ],
         ),
         const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
@@ -320,10 +326,13 @@ class AjoutModifPageState extends State<AjoutModifPage> {
                     firstDate: DateTime(2000),
                     lastDate: DateTime(2101));
                 if (pickedDate != null) {
+                  pickedDate.add(const Duration(hours: 1));
                   String formattedDate =
-                      DateFormat('dd-MM-yyyy').format(pickedDate);
+                      DateFormat('dd-MM-yyyy hh:mm:ss').format(pickedDate);
                   setState(() {
                     _dateRentree = formattedDate;
+                    _dateRentreePrint =
+                        DateFormat('dd-MM-yyyy').format(pickedDate);
                   });
                 }
               },

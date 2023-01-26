@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bank_tracker/class/depense.dart';
 import 'package:bank_tracker/class/depensePerCategories.dart';
 import 'package:bank_tracker/class/widgets.dart';
+import 'package:bank_tracker/class/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -205,7 +206,17 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
               ),
             ),
             drawer: Widgets.createDrawer(context),
-            body: Column(children: children),
+            body:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              SizedBox(
+                  child: Text(
+                'Détail de vos dépenses de \n${Strings.listMonths[_idMois - 1]}',
+                textAlign: TextAlign.center,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              )),
+              Column(children: children),
+            ]),
           );
         });
   }
