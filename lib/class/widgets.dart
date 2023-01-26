@@ -19,18 +19,21 @@ class Widgets {
               Navigator.pushReplacementNamed(context, '/routeHome');
             },
           ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
           ListTile(
             title: const Text('Graphes'),
             onTap: () {
               Navigator.pushReplacementNamed(context, '/routeGraphe');
             },
           ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
           ListTile(
-              title: const Text('Ajouter une dépense'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, '/routeAjout')),
+            title: const Text('Ajouter une dépense / rentrée'),
+            onTap: () => Navigator.pushReplacementNamed(context, '/routeAjout'),
+          ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
           ListTile(
-            title: const Text('Recap'),
+            title: const Text('Recapitulatif'),
             onTap: () {
               Navigator.pushReplacementNamed(context, '/routeRecap');
             },

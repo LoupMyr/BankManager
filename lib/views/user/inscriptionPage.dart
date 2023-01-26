@@ -1,6 +1,6 @@
-import 'package:bank_tracker/class/decimalTextInputFormatter.dart';
 import 'package:bank_tracker/class/tools.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class InscriptionPage extends StatefulWidget {
   const InscriptionPage({super.key, required this.title});
@@ -334,8 +334,9 @@ class InscriptionPageState extends State<InscriptionPage> {
             enabledBorder: InputBorder.none,
             border: InputBorder.none,
           ),
-          inputFormatters: [DecimalTextInputFormatter(decimalRange: 2)],
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+          ],
           validator: (valeur) {
             if (valeur == null || valeur.isEmpty) {
               return 'Saisie non valide';

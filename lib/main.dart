@@ -1,4 +1,4 @@
-import 'package:bank_tracker/views/ajoutPage.dart';
+import 'package:bank_tracker/views/ajoutModifPage.dart';
 import 'package:bank_tracker/views/detailsMoisPage.dart';
 import 'package:bank_tracker/views/graphePage.dart';
 import 'package:bank_tracker/views/myhomepage.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           '/routeHome': (BuildContext context) =>
               const MyHomePage(title: "Accueil"),
           '/routeAjout': (BuildContext context) =>
-              const AjoutPage(title: "Ajout dépense"),
+              AjoutModifPage(title: "Ajout sortie d'argent"),
           '/routeGraphe': (BuildContext context) =>
               const GraphePage(title: "Graphes"),
           '/routeRecap': (BuildContext context) =>

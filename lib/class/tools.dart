@@ -63,6 +63,33 @@ class Tools {
     );
   }
 
+  Future<http.Response> postRentree(double montant, String crediteur,
+      String date, String idCategorie, String remarques) async {
+    Map<String, dynamic> rem = {};
+    String? idUser = await Local.storage.read(key: 'id');
+    if (remarques.isNotEmpty) {
+      rem = {
+        "remarques": remarques,
+      };
+    }
+    final Map<String, dynamic> body = {
+      "montant": montant,
+      "crediteur": crediteur,
+      "datePaiement": date,
+      ...rem,
+      "categorie": '/apiBank/public/api/categorie_rentrees/$idCategorie',
+      "user": "/apiBank/public/api/users/${idUser!}"
+    };
+    return await http.post(
+      Uri.parse('https://s3-4428.nuage-peda.fr/apiBank/public/api/rentrees'),
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
   Future<http.Response> postUser(String email, String password, String nom,
       String prenom, double solde) async {
     return http.post(
@@ -92,5 +119,18 @@ class Tools {
         },
         body: convert.jsonEncode(
             <String, dynamic>{"email": email, "password": password}));
+  }
+
+  Future<http.Response> patchSoldeByUserId(
+      double newSolde, String idUser) async {
+    var json = convert.jsonEncode(<String, dynamic>{"solde": newSolde});
+    return await http.patch(
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/apiBank/public/api/users/$idUser'),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
   }
 }
