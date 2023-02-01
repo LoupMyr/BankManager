@@ -165,7 +165,8 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
                           data.getCategorie(),
                       yValueMapper: (TotalPerCategories data, index) =>
                           data.getTotal(),
-                      dataLabelMapper: (data, index) => '${data.getTotal()}',
+                      dataLabelMapper: (data, index) =>
+                          '${data.getTotal().toStringAsFixed(2)}€',
                       dataLabelSettings: const DataLabelSettings(
                           isVisible: true,
                           labelPosition: ChartDataLabelPosition.outside,
@@ -206,17 +207,20 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
               ),
             ),
             drawer: Widgets.createDrawer(context),
-            body:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
-                  child: Text(
-                'Détail de vos dépenses de \n${Strings.listMonths[_idMois - 1]}',
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              )),
-              Column(children: children),
-            ]),
+            body: SingleChildScrollView(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        child: Text(
+                      'Détail de vos dépenses de \n${Strings.listMonths[_idMois - 1]}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    )),
+                    Column(children: children),
+                  ]),
+            ),
           );
         });
   }

@@ -16,7 +16,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   final Tools _tools = Tools();
-  String _solde = '';
+  double _solde = -1;
   List<dynamic> _list = List.empty(growable: true);
 
   Future<void> popUpInfo() async {
@@ -57,7 +57,8 @@ class MyHomePageState extends State<MyHomePage> {
 
   Future<String> recupInfos() async {
     String? s = await Local.storage.read(key: 'solde');
-    _solde = s!;
+    _solde = double.parse(s!);
+    _solde = double.parse(_solde.toStringAsFixed(2));
     var depenses = await _tools.getDepensesByUserID();
     var rentrees = await _tools.getRentreesByUserID();
     _list = depenses + rentrees;
@@ -109,12 +110,18 @@ class MyHomePageState extends State<MyHomePage> {
                   children: [
                     Text(DateFormat('dd-MM-yyyy')
                         .format(DateTime.parse(_list[i]['datePaiement']))),
-                    Text(' $person', overflow: TextOverflow.fade),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      child: Text(' $person', overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(remarques, overflow: TextOverflow.ellipsis),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: Text(remarques, overflow: TextOverflow.ellipsis),
+                    ),
                   ],
                 ),
               ],
@@ -122,14 +129,19 @@ class MyHomePageState extends State<MyHomePage> {
           ),
         );
       }
+      Color clr = Colors.black;
+      if (_solde <= 0) {
+        clr = Colors.red.shade600;
+      }
       body = [
         Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: ListView(
-              shrinkWrap: true,
-              children: children,
-            ))
+          width: MediaQuery.of(context).size.width * 0.5,
+          height: MediaQuery.of(context).size.height * 0.35,
+          child: ListView(
+            shrinkWrap: true,
+            children: children,
+          ),
+        ),
       ];
     } else {
       body = [
@@ -141,24 +153,45 @@ class MyHomePageState extends State<MyHomePage> {
     return body;
   }
 
+  SizedBox buildSolde() {
+    Color clr = Colors.black;
+    if (_solde <= 0) {
+      clr = Colors.red.shade600;
+    }
+    return SizedBox(
+      child: Column(
+        children: <Widget>[
+          const Text('Votre solde actuelle:'),
+          Text(
+            '${_solde.toString()} €',
+            style: TextStyle(
+                fontSize: 40, color: clr, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: recupInfos(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        Column col = Column();
+        Column colActivites = Column();
+        SizedBox sbsolde = const SizedBox();
         FloatingActionButton fab =
             FloatingActionButton(onPressed: popUpInfo, child: null);
         if (snapshot.hasData) {
           fab = FloatingActionButton(
               onPressed: popUpInfo, child: const Icon(Icons.info_outline));
-          col = Column(children: buildListDepenses());
+          colActivites = Column(children: buildListDepenses());
+          sbsolde = buildSolde();
         } else if (snapshot.hasError) {
-          col = Column(children: const [
+          colActivites = Column(children: const [
             Icon(Icons.error_outline, color: Color.fromARGB(255, 255, 17, 0)),
           ]);
         } else {
-          col = Column(children: [
+          colActivites = Column(children: [
             SpinKitChasingDots(size: 150, color: Colors.red.shade300),
           ]);
         }
@@ -170,8 +203,11 @@ class MyHomePageState extends State<MyHomePage> {
           ]),
           drawer: Widgets.createDrawer(context),
           body: SingleChildScrollView(
-            child: Center(
-              child: col,
+            child: Column(
+              children: <Widget>[
+                Container(child: sbsolde),
+                Container(alignment: Alignment.center, child: colActivites),
+              ],
             ),
           ),
           floatingActionButton: fab,
