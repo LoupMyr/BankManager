@@ -126,15 +126,14 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            onTap: () => Navigator.pushReplacementNamed(
+                context, '/routeDetailAction',
+                arguments: _list[i]),
           ),
         );
       }
-      Color clr = Colors.black;
-      if (_solde <= 0) {
-        clr = Colors.red.shade600;
-      }
       body = [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width * 0.5,
           height: MediaQuery.of(context).size.height * 0.35,
           child: ListView(
@@ -207,6 +206,48 @@ class MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Container(child: sbsolde),
                 Container(alignment: Alignment.center, child: colActivites),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.3,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pushReplacementNamed(
+                            context, '/routeAjout'),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Icons.monetization_on_outlined, size: 50),
+                            Text(
+                              'Ajouter une action',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.3,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pushReplacementNamed(
+                            context, '/routeRecap'),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Icons.account_balance_sharp, size: 50),
+                            Text(
+                              'Votre récap',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

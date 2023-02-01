@@ -23,6 +23,11 @@ class Tools {
     );
   }
 
+  Future<http.Response> getCategorieById(String idCategorie) async {
+    return await http.get(Uri.parse(
+        'https://s3-4428.nuage-peda.fr/apiBank/public/api/categories/$idCategorie'));
+  }
+
   Future<List<dynamic>> getDepensesByUserID() async {
     List<dynamic> tab = List.empty(growable: true);
     String? idUser = await Local.storage.read(key: 'id');
@@ -156,5 +161,10 @@ class Tools {
           'Content-Type': 'application/merge-patch+json',
         },
         body: json);
+  }
+
+  String splitUri(String str) {
+    List<String> temp = str.split('/');
+    return (temp[temp.length - 1]);
   }
 }

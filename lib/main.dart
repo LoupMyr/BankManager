@@ -1,4 +1,5 @@
 import 'package:bank_tracker/views/ajoutModifPage.dart';
+import 'package:bank_tracker/views/detailsActionPage.dart';
 import 'package:bank_tracker/views/detailsMoisPage.dart';
 import 'package:bank_tracker/views/graphePage.dart';
 import 'package:bank_tracker/views/myhomepage.dart';
@@ -39,6 +40,8 @@ class MyApp extends StatelessWidget {
               const ConnexionPage(title: "Connexion"),
           '/routeInscription': (BuildContext context) =>
               const InscriptionPage(title: "Inscription"),
+          '/routeDetailAction': (BuildContext context) =>
+              const DetailsActionPage(title: "Détails action"),
         });
   }
 }
