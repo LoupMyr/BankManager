@@ -167,4 +167,12 @@ class Tools {
     List<String> temp = str.split('/');
     return (temp[temp.length - 1]);
   }
+
+  List<dynamic> sortListByDate(List<dynamic> list) {
+    list.sort((a, b) {
+      return DateTime.parse(b['datePaiement'])
+          .compareTo(DateTime.parse(a['datePaiement']));
+    });
+    return list;
+  }
 }

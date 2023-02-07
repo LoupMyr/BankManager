@@ -24,14 +24,15 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
   int _idMois = -1;
   var _depenses;
   var _categories;
-  double _total = 0;
   String _date = '';
   bool _hasDataBool = false;
   bool _createOnce = false;
   final List<TotalPerCategories> _list = List.empty(growable: true);
   ListView _listView = ListView(
     shrinkWrap: true,
-    children: [Text('Sélectionner une catégorie pour plus d\'information.')],
+    children: const [
+      Text('Sélectionner une catégorie pour plus d\'information.')
+    ],
   );
 
   Future<String> recupDepenses() async {
@@ -54,7 +55,6 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
           DateFormat('MM').format(DateTime.parse(elt['datePaiement'])));
       if (moisElt == _idMois) {
         _date = DateFormat('MM-yy').format(DateTime.parse(elt['datePaiement']));
-        _total = _total + double.parse(elt['montant'].toString());
         tabEltMois.add(elt);
       }
     }
@@ -150,7 +150,9 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
                           padding: const EdgeInsets.all(5),
                           child: SizedBox(
                             child: Text('${data.getPhraseBuilder()}',
-                                style: const TextStyle(color: Colors.white)),
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500)),
                           ));
                     },
                   ),
@@ -194,7 +196,7 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
             ];
           } else {
             children = [
-              SpinKitChasingDots(size: 150, color: Colors.red.shade400),
+              SpinKitChasingDots(size: 150, color: Colors.teal.shade400),
             ];
           }
           return Scaffold(

@@ -142,7 +142,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   }
 
   void createFormDepense() {
-    widget.title = 'Ajout sortie d\'argent';
+    widget.title = 'Ajout d\'un débit';
     _form = Form(
       key: _formKeyDepense,
       child: Column(children: [
@@ -207,6 +207,18 @@ class AjoutModifPageState extends State<AjoutModifPage> {
                 }
               },
               icon: const Icon(Icons.calendar_today),
+            ),
+            IconButton(
+              hoverColor: Colors.transparent,
+              onPressed: () async {
+                setState(() {
+                  _dateDepense =
+                      DateFormat('dd-MM-yyyy hh:mm:ss').format(DateTime.now());
+                  _dateDepensePrint =
+                      DateFormat('dd-MM-yyyy').format(DateTime.now());
+                });
+              },
+              icon: const Icon(Icons.today),
             ),
             Text(_dateDepensePrint),
           ],
@@ -275,7 +287,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   }
 
   void createFormRentree() {
-    widget.title = 'Ajout rentrée d\'argent';
+    widget.title = 'Ajout d\'un crédit';
     _form = Form(
       key: _formKeyRentree,
       child: Column(children: [
@@ -338,7 +350,19 @@ class AjoutModifPageState extends State<AjoutModifPage> {
               },
               icon: const Icon(Icons.calendar_today),
             ),
-            Text(_dateRentree),
+            IconButton(
+              hoverColor: Colors.transparent,
+              onPressed: () async {
+                setState(() {
+                  _dateRentree =
+                      DateFormat('dd-MM-yyyy hh:mm:ss').format(DateTime.now());
+                  _dateRentreePrint =
+                      DateFormat('dd-MM-yyyy').format(DateTime.now());
+                });
+              },
+              icon: const Icon(Icons.today),
+            ),
+            Text(_dateRentreePrint),
           ],
         ),
         const Padding(padding: EdgeInsets.symmetric(vertical: 10)),

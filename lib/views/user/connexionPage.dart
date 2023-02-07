@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bank_tracker/class/local.dart';
 import 'package:bank_tracker/class/tools.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +67,7 @@ class ConnexionPageState extends State<ConnexionPage> {
         _passwordController.text = password;
       }
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
     }
   }
 

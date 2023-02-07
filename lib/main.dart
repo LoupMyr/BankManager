@@ -18,12 +18,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Bank\'Tracker',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: Colors.red,
-          primarySwatch: Colors.red,
+          brightness: Brightness.light,
         ),
+        darkTheme: ThemeData(
+          buttonColor: Colors.grey,
+          brightness: Brightness.dark,
+        ),
+        themeMode: ThemeMode.dark,
         home: const ConnexionPage(title: 'Connexion'),
         routes: <String, WidgetBuilder>{
           '/routeHome': (BuildContext context) =>

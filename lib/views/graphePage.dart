@@ -80,7 +80,7 @@ class GraphePageState extends State<GraphePage> {
                           yValueMapper: (TotalPerMonth data, index) =>
                               data.getTotal(),
                           name: 'Total:',
-                          color: const Color.fromRGBO(8, 142, 255, 1))
+                          color: Colors.teal.shade400)
                     ],
                   ),
                 ),
@@ -88,12 +88,11 @@ class GraphePageState extends State<GraphePage> {
             ];
           } else if (snapshot.hasError) {
             children = [
-              const Icon(Icons.error_outline,
-                  color: Color.fromARGB(255, 255, 17, 0)),
+              const Icon(Icons.error_outline, color: Colors.red),
             ];
           } else {
             children = [
-              SpinKitChasingDots(size: 150, color: Colors.red.shade400),
+              SpinKitChasingDots(size: 150, color: Colors.teal.shade400),
             ];
           }
           return Scaffold(

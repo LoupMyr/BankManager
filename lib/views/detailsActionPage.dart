@@ -73,7 +73,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
           } else {
             col = Column(
               children: <Widget>[
-                SpinKitChasingDots(size: 150, color: Colors.red.shade400),
+                SpinKitChasingDots(size: 150, color: Colors.teal.shade400),
               ],
             );
           }
@@ -81,8 +81,11 @@ class DetailsActionPageState extends State<DetailsActionPage> {
             appBar: AppBar(
               centerTitle: true,
               title: Text(widget.title),
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+              ),
             ),
-            drawer: Widgets.createDrawer(context),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

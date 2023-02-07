@@ -71,9 +71,8 @@ class MyHomePageState extends State<MyHomePage> {
     return '';
   }
 
-  List<Widget> buildListDepenses() {
-    List<Widget> body = List.empty(growable: true);
-    List<Widget> children = List.empty(growable: true);
+  Widget buildListDepenses() {
+    Widget body = SizedBox();
     if (_list.isNotEmpty) {
       int nbIterations = 0;
       if (_list.length >= 5) {
@@ -81,79 +80,26 @@ class MyHomePageState extends State<MyHomePage> {
       } else {
         nbIterations = _list.length - 1;
       }
-      for (int i = 0; i < nbIterations; i++) {
-        String remarques = '/';
-        String person = '';
-        String symbol = '-';
-        TextStyle textStyle = const TextStyle(color: Colors.red);
-        try {
-          remarques = _list[i]['remarques'];
-        } catch (e) {}
-        if (_list[i]['@type'] == "Rentree") {
-          person = _list[i]['crediteur'];
-          symbol = '+';
-          textStyle = const TextStyle(color: Colors.green);
-        } else {
-          person = _list[i]['debiteur'];
-        }
-        children.add(const Divider(
-          thickness: 2,
-        ));
-        children.add(
-          ListTile(
-            title: Text('$symbol ${_list[i]['montant'].toString()}€',
-                style: textStyle),
-            subtitle: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(DateFormat('dd-MM-yyyy')
-                        .format(DateTime.parse(_list[i]['datePaiement']))),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.15,
-                      child: Text(' $person', overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: Text(remarques, overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            onTap: () => Navigator.pushReplacementNamed(
-                context, '/routeDetailAction',
-                arguments: _list[i]),
-          ),
-        );
-      }
-      body = [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
-          height: MediaQuery.of(context).size.height * 0.35,
-          child: ListView(
-            shrinkWrap: true,
-            children: children,
-          ),
+      List<Widget> children =
+          Widgets.createList(nbIterations, _list, context, 0.35);
+      body = SizedBox(
+        width: MediaQuery.of(context).size.width * 0.5,
+        height: MediaQuery.of(context).size.height * 0.35,
+        child: ListView(
+          shrinkWrap: true,
+          children: children,
         ),
-      ];
+      );
     } else {
-      body = [
-        const SizedBox(
-          child: Text('Aucune dépenses ou rentrée récentes'),
-        )
-      ];
+      body = const SizedBox(
+        child: Text('Aucune dépenses ou rentrée récentes'),
+      );
     }
     return body;
   }
 
   SizedBox buildSolde() {
-    Color clr = Colors.black;
+    Color clr = Colors.white;
     if (_solde <= 0) {
       clr = Colors.red.shade600;
     }
@@ -181,30 +127,44 @@ class MyHomePageState extends State<MyHomePage> {
         FloatingActionButton fab =
             FloatingActionButton(onPressed: popUpInfo, child: null);
         if (snapshot.hasData) {
+          sbsolde = buildSolde();
           fab = FloatingActionButton(
               onPressed: popUpInfo, child: const Icon(Icons.info_outline));
-          colActivites = Column(children: buildListDepenses());
-          sbsolde = buildSolde();
+          colActivites = Column(children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(child: sbsolde),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                buildListDepenses(),
+              ],
+            ),
+          ]);
         } else if (snapshot.hasError) {
           colActivites = Column(children: const [
-            Icon(Icons.error_outline, color: Color.fromARGB(255, 255, 17, 0)),
+            Icon(Icons.error_outline, color: Colors.red),
           ]);
         } else {
           colActivites = Column(children: [
-            SpinKitChasingDots(size: 150, color: Colors.red.shade300),
+            SpinKitChasingDots(size: 150, color: Colors.teal.shade400),
           ]);
         }
         return Scaffold(
           appBar:
               AppBar(centerTitle: true, title: Text(widget.title), actions: [
             IconButton(
-                onPressed: logout, icon: const Icon(Icons.logout_outlined)),
+                onPressed: logout,
+                icon: const Icon(Icons.logout_outlined),
+                tooltip: 'Deconnexion'),
           ]),
           drawer: Widgets.createDrawer(context),
           body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Container(child: sbsolde),
                 Container(alignment: Alignment.center, child: colActivites),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 Row(
@@ -216,6 +176,8 @@ class MyHomePageState extends State<MyHomePage> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pushReplacementNamed(
                             context, '/routeAjout'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade400),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const <Widget>[
@@ -234,6 +196,8 @@ class MyHomePageState extends State<MyHomePage> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pushReplacementNamed(
                             context, '/routeRecap'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade400),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const <Widget>[
