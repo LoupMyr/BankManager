@@ -48,4 +48,6 @@ class Strings {
     'Novembre',
     'Decembre'
   ];
+
+  static final List<String> listDuree = ['Jours', 'Mois', 'Années'];
 }

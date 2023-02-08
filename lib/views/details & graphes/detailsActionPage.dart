@@ -63,7 +63,6 @@ class DetailsActionPageState extends State<DetailsActionPage> {
   @override
   Widget build(BuildContext context) {
     _action = ModalRoute.of(context)!.settings.arguments as dynamic;
-    print(_action);
     return FutureBuilder(
         future: recupCategorie(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {

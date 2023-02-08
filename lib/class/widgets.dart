@@ -65,6 +65,18 @@ class Widgets {
               Navigator.pushReplacementNamed(context, '/routeRecap');
             },
           ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
+          ListTile(
+            title: Row(
+              children: const <Widget>[
+                Icon(Icons.wallet),
+                Text(' Vos portefeuilles'),
+              ],
+            ),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/routePortefeuilleList');
+            },
+          ),
         ],
       ),
     );

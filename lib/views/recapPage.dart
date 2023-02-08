@@ -58,7 +58,7 @@ class RecapPageState extends State<RecapPage> {
     if (tab.isNotEmpty) {
       children = Widgets.createList(tab.length, tab, context, 0.6, 0.3);
     } else {
-      children = [const Text(':(')];
+      children = [const Text('Aucun changement enregistré')];
     }
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.9,
@@ -130,10 +130,12 @@ class RecapPageState extends State<RecapPage> {
           ),
           drawer: Widgets.createDrawer(context),
           body: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Container(alignment: Alignment.center, child: colActivite),
-              ],
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  Container(child: colActivite),
+                ],
+              ),
             ),
           ),
         );

@@ -31,6 +31,8 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   double _montantDepense = -1;
   String _debiteurDepense = '';
   String _remarquesDepense = '';
+  int? _idPortefeuille;
+  String _portefeuilleNom = '';
   //*************************/
   String _dateRentree = '';
   String _dateRentreePrint = '';
@@ -48,11 +50,18 @@ class AjoutModifPageState extends State<AjoutModifPage> {
   final fieldRemarquesRentree = TextEditingController();
   final fieldMontantRentree = TextEditingController();
   final fieldCrediteurRentree = TextEditingController();
+//*********************** */
+  List<dynamic> _listPortefeuilles = List.empty(growable: true);
 
   void sendRequestDepense() async {
     double montant = _montantDepense;
-    var response = await _tools.postDepense(_montantDepense, _debiteurDepense,
-        _dateDepense, _idSelectCategorieDepense.toString(), _remarquesDepense);
+    var response = await _tools.postDepense(
+        _montantDepense,
+        _debiteurDepense,
+        _dateDepense,
+        _idSelectCategorieDepense.toString(),
+        _remarquesDepense,
+        _idPortefeuille);
     if (response.statusCode == 201) {
       String? soldeStr = await Local.storage.read(key: 'solde');
       double solde = double.parse(soldeStr!);
@@ -139,6 +148,10 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         () => createFormRentree(),
       );
     }
+  }
+
+  Future<void> recupPortefeuilles() async {
+    _listPortefeuilles = await _tools.getPortefeuillesByUserId();
   }
 
   void createFormDepense() {
@@ -280,6 +293,21 @@ class AjoutModifPageState extends State<AjoutModifPage> {
               }
             },
           ),
+        ),
+        const Padding(padding: EdgeInsets.all(10)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              hoverColor: Colors.transparent,
+              onPressed: () async {
+                await recupPortefeuilles();
+                createPopUpPortefeuille();
+              },
+              icon: const Icon(Icons.wallet_outlined),
+            ),
+            Text(_portefeuilleNom),
+          ],
         ),
         const Padding(padding: EdgeInsets.all(10)),
         ElevatedButton(
@@ -448,6 +476,55 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         ),
       ]),
     );
+  }
+
+  Future<void> createPopUpPortefeuille() async {
+    List<Widget> tab = createTab();
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Ajouter à un portefeuille virtuel: '),
+            content: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  children: tab,
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Annuler'))
+            ],
+          );
+        });
+  }
+
+  List<Widget> createTab() {
+    List<Widget> tab = List.empty(growable: true);
+    for (var elt in _listPortefeuilles) {
+      tab.add(
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.08,
+          width: MediaQuery.of(context).size.width * 0.6,
+          child: ElevatedButton(
+            style:
+                ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade400),
+            onPressed: () {
+              setState(() {
+                _idPortefeuille = elt['id'];
+                _portefeuilleNom = elt['titre'];
+              });
+              Navigator.pop(context);
+            },
+            child: Text(elt['titre']),
+          ),
+        ),
+      );
+    }
+    return tab;
   }
 
   @override

@@ -1,8 +1,11 @@
 import 'package:bank_tracker/views/ajoutModifPage.dart';
-import 'package:bank_tracker/views/detailsActionPage.dart';
-import 'package:bank_tracker/views/detailsMoisPage.dart';
-import 'package:bank_tracker/views/graphePage.dart';
+import 'package:bank_tracker/views/details%20&%20graphes/detailsActionPage.dart';
+import 'package:bank_tracker/views/details%20&%20graphes/detailsMoisPage.dart';
+import 'package:bank_tracker/views/details%20&%20graphes/graphePage.dart';
 import 'package:bank_tracker/views/myhomepage.dart';
+import 'package:bank_tracker/views/portefeuille/ajouterPortefeuillePage.dart';
+import 'package:bank_tracker/views/portefeuille/portefeuilleListPage.dart';
+import 'package:bank_tracker/views/portefeuille/portefeuillePage.dart';
 import 'package:bank_tracker/views/recapPage.dart';
 import 'package:bank_tracker/views/user/connexionPage.dart';
 import 'package:bank_tracker/views/user/inscriptionPage.dart';
@@ -46,6 +49,12 @@ class MyApp extends StatelessWidget {
               const InscriptionPage(title: "Inscription"),
           '/routeDetailAction': (BuildContext context) =>
               const DetailsActionPage(title: "Détails action"),
+          '/routePortefeuilleList': (BuildContext context) =>
+              const PortefeuilleListPage(title: "Vos portefeuilles virtuels"),
+          '/routePortefeuilleAjout': (BuildContext context) =>
+              PortefeuilleAjoutPage(title: "Ajouter un portefeuille virtuel"),
+          '/routePortefeuille': (BuildContext context) =>
+              const PortefeuillePage(title: "Détails portefeuille"),
         });
   }
 }

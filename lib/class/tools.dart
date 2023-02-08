@@ -2,6 +2,8 @@ import 'package:bank_tracker/class/local.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
+import 'package:intl/intl.dart';
+
 class Tools {
   Tools();
 
@@ -23,6 +25,13 @@ class Tools {
     );
   }
 
+  Future<http.Response> getPortefeuilles() async {
+    return await http.get(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles'),
+    );
+  }
+
   Future<http.Response> getCategorieById(String idCategorie) async {
     return await http.get(Uri.parse(
         'https://s3-4428.nuage-peda.fr/apiBank/public/api/categories/$idCategorie'));
@@ -35,8 +44,7 @@ class Tools {
     if (response.statusCode == 200) {
       var depenses = convert.jsonDecode(response.body);
       for (var elt in depenses['hydra:member']) {
-        List<String> temp = elt['user'].split('/');
-        String idUserElt = temp[temp.length - 1];
+        String idUserElt = this.splitUri(elt['user']);
         if (idUserElt == idUser) {
           tab.add(elt);
         }
@@ -50,10 +58,9 @@ class Tools {
     String? idUser = await Local.storage.read(key: 'id');
     var response = await getRentrees();
     if (response.statusCode == 200) {
-      var depenses = convert.jsonDecode(response.body);
-      for (var elt in depenses['hydra:member']) {
-        List<String> temp = elt['user'].split('/');
-        String idUserElt = temp[temp.length - 1];
+      var portefeuilles = convert.jsonDecode(response.body);
+      for (var elt in portefeuilles['hydra:member']) {
+        String idUserElt = this.splitUri(elt['user']);
         if (idUserElt == idUser) {
           tab.add(elt);
         }
@@ -62,11 +69,52 @@ class Tools {
     return tab;
   }
 
+  Future<List<dynamic>> getPortefeuillesByUserId() async {
+    List<dynamic> tab = List.empty(growable: true);
+    String? idUser = await Local.storage.read(key: 'id');
+    var response = await getPortefeuilles();
+    if (response.statusCode == 200) {
+      var depenses = convert.jsonDecode(response.body);
+      for (var elt in depenses['hydra:member']) {
+        String idUserElt = this.splitUri(elt['user']);
+        if (idUserElt == idUser) {
+          tab.add(elt);
+        }
+      }
+    }
+    return tab;
+  }
+
+  Future<List<dynamic>> getDepensesByPortefeuilleId(int id) async {
+    List<dynamic> response = await getDepensesByUserID();
+    List<dynamic> tab = List.empty(growable: true);
+    for (var elt in response) {
+      try {
+        String idPortefeuille = splitUri(elt['portefeuille']);
+        if (idPortefeuille == id.toString()) {
+          tab.add(elt);
+        }
+      } catch (e) {}
+    }
+    return tab;
+  }
+
   //POST
 
-  Future<http.Response> postDepense(double montant, String debiteur,
-      String date, String idCategorie, String remarques) async {
+  Future<http.Response> postDepense(
+      double montant,
+      String debiteur,
+      String date,
+      String idCategorie,
+      String remarques,
+      int? idPortefeuille) async {
     Map<String, dynamic> rem = {};
+    Map<String, dynamic> portefeuille = {};
+    if (idPortefeuille != null) {
+      portefeuille = {
+        "portefeuille": "/apiBank/public/api/portefeuilles/$idPortefeuille",
+      };
+    }
     String? idUser = await Local.storage.read(key: 'id');
     if (remarques.isNotEmpty) {
       rem = {
@@ -79,11 +127,34 @@ class Tools {
       "datePaiement": date,
       "categorieActivite": '/apiBank/public/api/categories/$idCategorie',
       ...rem,
-      "user": "/apiBank/public/api/users/${idUser!}"
+      ...portefeuille,
+      "user": "/apiBank/public/api/users/$idUser"
     };
-    print(body);
     return await http.post(
       Uri.parse('https://s3-4428.nuage-peda.fr/apiBank/public/api/depenses'),
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> postPortefeuille(
+      String titre, double montant, int duree, int categorieId) async {
+    String? idUser = await Local.storage.read(key: 'id');
+    String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final Map<String, dynamic> body = {
+      "titre": titre,
+      "user": "/apiBank/public/api/users/${idUser!}",
+      "montant": montant,
+      "duree": duree,
+      "categorie": '/apiBank/public/api/categories/$categorieId',
+      "dateCreation": date
+    };
+    return await http.post(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles'),
       headers: <String, String>{
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -163,6 +234,67 @@ class Tools {
         body: json);
   }
 
+  Future<http.Response> patchPortefeuille(String titre, double montant,
+      int duree, int categorieId, String idPortefeuille) async {
+    final Map<String, dynamic> body = {
+      "titre": titre,
+      "montant": montant,
+      "duree": duree,
+      "categorie": '/apiBank/public/api/categories/$categorieId',
+    };
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles/$idPortefeuille'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> patchDepenseClearPortefeuille(String id) async {
+    Map<String, dynamic> body = {"portefeuille": null};
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/depenses/$id'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> deletePortefeuille(String id) async {
+    return await http.delete(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles/$id'),
+    );
+  }
+
+  Future<void> deleteDepensesOfPorteuille(String id) async {
+    var response = await this.getDepenses();
+    List<dynamic> tab = List.empty(growable: true);
+    if (response.statusCode == 200) {
+      var lesDepenses = convert.jsonDecode(response.body);
+      for (var elt in lesDepenses['hydra:member']) {
+        try {
+          String idPortefeuilleElt = this.splitUri(elt['portefeuille']);
+          if (idPortefeuilleElt == id) {
+            tab.add(elt);
+          }
+        } catch (e) {}
+      }
+      if (tab.isNotEmpty) {
+        for (var elt in tab) {
+          var response =
+              await this.patchDepenseClearPortefeuille(elt['id'].toString());
+        }
+      }
+    }
+  }
+
   String splitUri(String str) {
     List<String> temp = str.split('/');
     return (temp[temp.length - 1]);
@@ -174,5 +306,14 @@ class Tools {
           .compareTo(DateTime.parse(a['datePaiement']));
     });
     return list;
+  }
+
+  int convertToDays(int duree, int idDuree) {
+    if (idDuree == 1) {
+      duree = duree * 31;
+    } else if (idDuree == 2) {
+      duree = duree * 365;
+    }
+    return duree;
   }
 }
