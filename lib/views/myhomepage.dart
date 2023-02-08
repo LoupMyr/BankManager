@@ -81,7 +81,7 @@ class MyHomePageState extends State<MyHomePage> {
         nbIterations = _list.length - 1;
       }
       List<Widget> children =
-          Widgets.createList(nbIterations, _list, context, 0.35);
+          Widgets.createList(nbIterations, _list, context, 0.35, 0.15);
       body = SizedBox(
         width: MediaQuery.of(context).size.width * 0.5,
         height: MediaQuery.of(context).size.height * 0.35,

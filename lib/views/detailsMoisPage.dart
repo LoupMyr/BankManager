@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:bank_tracker/class/depense.dart';
 import 'package:bank_tracker/class/depensePerCategories.dart';
 import 'package:bank_tracker/class/widgets.dart';
 import 'package:bank_tracker/class/strings.dart';
@@ -60,7 +58,7 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
     }
     for (var c in _categories['hydra:member']) {
       double totalCategorie = 0;
-      List<Depense> depenses = List.empty(growable: true);
+      List<dynamic> depenses = List.empty(growable: true);
       for (var elt in tabEltMois) {
         List<String> temp = elt['categorieActivite'].split('/');
         String idCategorie = temp[temp.length - 1];
@@ -73,13 +71,7 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
           } catch (e) {}
           List<String> tempUser = elt['user'].split('/');
           String idUser = temp[temp.length - 1];
-          depenses.add(Depense(
-              double.parse(elt['montant'].toString()),
-              elt['debiteur'],
-              elt['datePaiement'],
-              idCategorie,
-              remarques,
-              idUser));
+          depenses.add(elt);
         }
       }
       if (totalCategorie > 0) {
@@ -91,20 +83,8 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
   void updateColumn(TotalPerCategories categorie) {
     List<Widget> tabChildren = List.empty(growable: true);
     for (var depense in categorie.getDepenses()) {
-      tabChildren.add(
-        ListTile(
-          title: Text('-${depense.getMontant().toString()}€'),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(depense.getDebiteur()),
-              depense.getRemarques() != null
-                  ? Text(depense.getRemarques()!)
-                  : const Text('/'),
-            ],
-          ),
-        ),
-      );
+      tabChildren = Widgets.createList(categorie.getDepenses().length,
+          categorie.getDepenses(), context, 0.6, 0.5);
     }
     setState(() {
       _listView = ListView(

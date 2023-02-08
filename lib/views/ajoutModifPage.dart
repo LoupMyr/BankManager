@@ -150,8 +150,17 @@ class AjoutModifPageState extends State<AjoutModifPage> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: TextFormField(
             controller: fieldMontantDepense,
-            decoration:
-                const InputDecoration(label: Text('Montant du débit: ')),
+            decoration: const InputDecoration(
+              label: Text('Montant du débit: '),
+              prefix: Text(
+                '- ',
+                style: TextStyle(fontSize: 20),
+              ),
+              suffix: Text(
+                ' €',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
@@ -274,6 +283,8 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         ),
         const Padding(padding: EdgeInsets.all(10)),
         ElevatedButton(
+          style:
+              ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade400),
           onPressed: () {
             if (_formKeyDepense.currentState!.validate()) {
               sendRequestDepense();
@@ -295,8 +306,17 @@ class AjoutModifPageState extends State<AjoutModifPage> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: TextFormField(
             controller: fieldMontantRentree,
-            decoration:
-                const InputDecoration(label: Text('Montant du crédit: ')),
+            decoration: const InputDecoration(
+              label: Text('Montant du crédit: '),
+              prefix: Text(
+                '+ ',
+                style: TextStyle(fontSize: 20),
+              ),
+              suffix: Text(
+                ' €',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
@@ -416,6 +436,8 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         ),
         const Padding(padding: EdgeInsets.all(10)),
         ElevatedButton(
+          style:
+              ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade400),
           onPressed: () {
             if (_formKeyRentree.currentState!.validate()) {
               sendRequestRentree();

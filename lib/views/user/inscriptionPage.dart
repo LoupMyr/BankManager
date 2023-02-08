@@ -355,6 +355,7 @@ class InscriptionPageState extends State<InscriptionPage> {
           padding:
               EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1)),
       ElevatedButton(
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade400),
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             sendRequest();

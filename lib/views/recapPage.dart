@@ -56,9 +56,7 @@ class RecapPageState extends State<RecapPage> {
     List<dynamic> tab = guessList();
     List<Widget> children = List.empty(growable: true);
     if (tab.isNotEmpty) {
-      for (var elt in tab) {
-        children = Widgets.createList(tab.length, tab, context, 0.6);
-      }
+      children = Widgets.createList(tab.length, tab, context, 0.6, 0.3);
     } else {
       children = [const Text(':(')];
     }
@@ -122,7 +120,7 @@ class RecapPageState extends State<RecapPage> {
           ]);
         } else {
           colActivite = Column(children: [
-            SpinKitChasingDots(size: 150, color: Colors.red.shade300),
+            SpinKitChasingDots(size: 150, color: Colors.teal.shade400),
           ]);
         }
         return Scaffold(

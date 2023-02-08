@@ -14,7 +14,7 @@ class ConnexionPage extends StatefulWidget {
 
 class ConnexionPageState extends State<ConnexionPage> {
   final _formKey = GlobalKey<FormState>();
-  Tools _tools = Tools();
+  final Tools _tools = Tools();
   String _email = '';
   String _password = '';
   bool _obscureTextMdp = true;
@@ -178,10 +178,10 @@ class ConnexionPageState extends State<ConnexionPage> {
                   width: 50.0,
                   child: Theme(
                     data: ThemeData(
-                      unselectedWidgetColor: Colors.blue,
+                      unselectedWidgetColor: Colors.teal.shade400,
                     ),
                     child: Checkbox(
-                      activeColor: Colors.blue,
+                      activeColor: Colors.teal.shade400,
                       value: _isChecked,
                       onChanged: (bool? value) {
                         _handleRemeberme(value!);
@@ -202,6 +202,8 @@ class ConnexionPageState extends State<ConnexionPage> {
                     padding: EdgeInsets.only(
                         top: MediaQuery.of(context).size.height * 0.1)),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade400),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       sendRequest();

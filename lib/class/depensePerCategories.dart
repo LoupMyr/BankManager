@@ -1,11 +1,9 @@
-import 'package:bank_tracker/class/depense.dart';
-
 class TotalPerCategories {
   TotalPerCategories(this._categorie, this._total, this._depenses);
 
   String _categorie;
   double _total;
-  List<Depense> _depenses;
+  List<dynamic> _depenses;
 
   String getCategorie() {
     return this._categorie;
@@ -27,11 +25,11 @@ class TotalPerCategories {
     return this._categorie;
   }
 
-  List<Depense> getDepenses() {
+  List<dynamic> getDepenses() {
     return this._depenses;
   }
 
-  void setDepenses(List<Depense> newDepenses) {
+  void setDepenses(List<dynamic> newDepenses) {
     this._depenses = newDepenses;
   }
 }

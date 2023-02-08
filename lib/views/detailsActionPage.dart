@@ -19,8 +19,13 @@ class DetailsActionPageState extends State<DetailsActionPage> {
   String _categorieName = '';
 
   Future<void> recupCategorie() async {
-    var response = await _tools
-        .getCategorieById(_tools.splitUri(_action['categorieActivite']));
+    String categorieStr = '';
+    if (_action['@type'] == 'Depense') {
+      categorieStr = _action['categorieActivite'];
+    } else {
+      categorieStr = _action['categorie'];
+    }
+    var response = await _tools.getCategorieById(_tools.splitUri(categorieStr));
     if (response.statusCode == 200) {
       var categorie = convert.jsonDecode(response.body);
       _categorieName = categorie['libelle'];
@@ -58,6 +63,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
   @override
   Widget build(BuildContext context) {
     _action = ModalRoute.of(context)!.settings.arguments as dynamic;
+    print(_action);
     return FutureBuilder(
         future: recupCategorie(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {

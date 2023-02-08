@@ -71,7 +71,7 @@ class Widgets {
   }
 
   static List<Widget> createList(int nbIterations, List<dynamic> _list,
-      BuildContext context, double coef) {
+      BuildContext context, double coefRem, double coefPerson) {
     List<Widget> children = List.empty(growable: true);
     for (int i = 0; i < nbIterations; i++) {
       String remarques = '/';
@@ -103,18 +103,22 @@ class Widgets {
                   Text(DateFormat('dd-MM-yyyy')
                       .format(DateTime.parse(_list[i]['datePaiement']))),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    child: Text(' $person', overflow: TextOverflow.ellipsis),
+                    width: MediaQuery.of(context).size.width * coefPerson,
+                    child: Text(' $person',
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end),
                   ),
                 ],
               ),
               Row(
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * coef,
+                    width: MediaQuery.of(context).size.width * coefRem,
                     height: MediaQuery.of(context).size.height * 0.06,
-                    child:
-                        Text('\n$remarques', overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      '\n$remarques',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
