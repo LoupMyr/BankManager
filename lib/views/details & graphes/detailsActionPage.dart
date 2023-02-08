@@ -1,5 +1,4 @@
 import 'package:bank_tracker/class/tools.dart';
-import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
@@ -35,6 +34,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
   Column buildBody() {
     String remarques = '/';
     String person = '';
+    String personStr = 'Débiteur: ';
     String symbol = '-';
     TextStyle textStyle = const TextStyle(color: Colors.red);
     try {
@@ -43,20 +43,45 @@ class DetailsActionPageState extends State<DetailsActionPage> {
     if (_action['@type'] == 'Rentree') {
       symbol = '+';
       person = _action['crediteur'];
+      personStr = 'Créditeur: ';
     } else {
       person = _action['debiteur'];
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(_action['@type']),
-        Text(person),
-        Text(remarques),
-        Text('$symbol ${_action['montant'].toString()}€'),
-        Text(DateFormat('dd-MM-yyyy')
-            .format(DateTime.parse(_action['datePaiement']))),
-        Text(_categorieName),
+        createText('Type:', _action['@type']),
+        createText(personStr, person),
+        createText('Remarques: ', remarques),
+        createText('Montant: ', '$symbol ${_action['montant'].toString()}€'),
+        createText(
+            'Date de paiement: ',
+            DateFormat('dd-MM-yyyy')
+                .format(DateTime.parse(_action['datePaiement']))),
+        createText('Catégorie: ', _categorieName),
       ],
+    );
+  }
+
+  RichText createText(String title, String content) {
+    return RichText(
+      text: TextSpan(
+          text: title,
+          style: const TextStyle(
+              decoration: TextDecoration.underline,
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w500),
+          children: <TextSpan>[
+            TextSpan(
+              text: ' $content',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  decoration: TextDecoration.none,
+                  fontWeight: FontWeight.normal),
+            )
+          ]),
     );
   }
 

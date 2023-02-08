@@ -485,7 +485,10 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Ajouter à un portefeuille virtuel: '),
+            title: const Text(
+              'Ajouter à un portefeuille virtuel: ',
+              textAlign: TextAlign.center,
+            ),
             content: SingleChildScrollView(
               child: Center(
                 child: Column(
@@ -504,25 +507,34 @@ class AjoutModifPageState extends State<AjoutModifPage> {
 
   List<Widget> createTab() {
     List<Widget> tab = List.empty(growable: true);
-    for (var elt in _listPortefeuilles) {
-      tab.add(
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.08,
-          width: MediaQuery.of(context).size.width * 0.6,
-          child: ElevatedButton(
-            style:
-                ElevatedButton.styleFrom(backgroundColor: Colors.teal.shade400),
-            onPressed: () {
-              setState(() {
-                _idPortefeuille = elt['id'];
-                _portefeuilleNom = elt['titre'];
-              });
-              Navigator.pop(context);
-            },
-            child: Text(elt['titre']),
+    if (_listPortefeuilles.isNotEmpty) {
+      for (var elt in _listPortefeuilles) {
+        tab.add(
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.08,
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade400),
+              onPressed: () {
+                setState(() {
+                  _idPortefeuille = elt['id'];
+                  _portefeuilleNom = elt['titre'];
+                });
+                Navigator.pop(context);
+              },
+              child: Text(elt['titre']),
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } else {
+      tab = [
+        const Text(
+          'Vous n\'avez aucun portefeuille virtuel de créé pour le moment.',
+          textAlign: TextAlign.center,
+        )
+      ];
     }
     return tab;
   }

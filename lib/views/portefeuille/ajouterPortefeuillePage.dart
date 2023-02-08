@@ -91,8 +91,11 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.title),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
-      drawer: Widgets.createDrawer(context),
       body: SingleChildScrollView(
         child: Center(
           child: Form(

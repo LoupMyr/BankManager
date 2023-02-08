@@ -74,11 +74,16 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text(
-                'Vous êtes sur le point de supprimer un de vos portefeuille virtuel !'),
+              'Vous êtes sur le point de supprimer un portefeuille virtuel !',
+              textAlign: TextAlign.center,
+            ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: const <Widget>[
-                  Text('Etes-sur de vouloir continuer ?'),
+                  Text(
+                    'Voulez-vous tout de même poursuivre cette action ?',
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
@@ -141,7 +146,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
                   Navigator.pushNamed(context, '/routePortefeuilleAjout',
                       arguments: '');
                 },
-                child: const Text('Ajouter nouveau portefeuille virtuel'),
+                child: const Text('Ajouter un nouveau portefeuille virtuel'),
               ),
             );
           } else if (snapshot.hasError) {
