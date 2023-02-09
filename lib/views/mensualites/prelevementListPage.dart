@@ -3,53 +3,52 @@ import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class PortefeuilleListPage extends StatefulWidget {
-  const PortefeuilleListPage({super.key, required this.title});
+class PrelevementListPage extends StatefulWidget {
+  const PrelevementListPage({super.key, required this.title});
   final String title;
 
   @override
-  State<PortefeuilleListPage> createState() => PortefeuilleListPageState();
+  State<PrelevementListPage> createState() => PrelevementListPageState();
 }
 
-class PortefeuilleListPageState extends State<PortefeuilleListPage> {
-  final Tools _tools = Tools();
-  List<dynamic> _listPortefeuilles = List.empty(growable: true);
+class PrelevementListPageState extends State<PrelevementListPage> {
+  Tools _tools = Tools();
+  List<dynamic> _listPrelevement = List.empty(growable: true);
 
-  Future<String> recupPortefeuilles() async {
-    _listPortefeuilles = await _tools.getPortefeuillesByUserId();
+  Future<String> recupPrelevements() async {
+    _listPrelevement = await _tools.getPrelevementsByUserId();
     return '';
   }
 
   Column buildBody() {
     List<Widget> tab = List.empty(growable: true);
-    if (_listPortefeuilles.isNotEmpty) {
-      for (var elt in _listPortefeuilles) {
-        TextStyle ts = const TextStyle(decoration: TextDecoration.none);
-        if (_tools.estExpire(elt)) {
-          ts = const TextStyle(
-              decoration: TextDecoration.lineThrough, decorationThickness: 3);
+    if (_listPrelevement.isNotEmpty) {
+      for (var elt in _listPrelevement) {
+        Color color = Colors.red;
+        if (!elt['estDebit']) {
+          color = Colors.green;
         }
         tab.add(
           Row(
             children: [
-              SizedBox(
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: color, width: 2),
+                    borderRadius: const BorderRadius.all(Radius.circular(5))),
                 height: MediaQuery.of(context).size.height * 0.1,
                 width: MediaQuery.of(context).size.width * 0.7,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal.shade400),
-                  onPressed: () => Navigator.pushNamed(
-                      context, '/routePortefeuille',
-                      arguments: elt),
-                  child: Text(elt['titre'], style: ts),
+                  onPressed: () => null,
+                  child: Text(elt['titre']),
                 ),
               ),
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () async {
-                  await Navigator.pushNamed(context, '/routePortefeuilleAjout',
-                      arguments: elt);
-                },
+                onPressed: () => Navigator.pushNamed(
+                    context, '/routeAjoutPrelevement',
+                    arguments: elt),
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
@@ -66,7 +65,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
       }
     } else {
       tab = [
-        const Text('Aucun portefeuille.'),
+        const Text('Aucune action mensuelle enregistré.'),
       ];
     }
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: tab);
@@ -79,7 +78,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text(
-              'Vous êtes sur le point de supprimer un portefeuille virtuel !',
+              'Vous êtes sur le point de supprimer une action mensuelle !',
               textAlign: TextAlign.center,
             ),
             content: SingleChildScrollView(
@@ -96,7 +95,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
               TextButton(
                 child: const Text('Oui'),
                 onPressed: () async {
-                  await deletePortefeuille(id);
+                  await deletePrelevement(id);
                   Navigator.of(context).pop();
                 },
               ),
@@ -114,16 +113,15 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
         });
   }
 
-  Future<void> deletePortefeuille(String id) async {
-    await _tools.deleteDepensesOfPorteuille(id);
-    var response = await _tools.deletePortefeuille(id);
+  Future<void> deletePrelevement(String id) async {
+    var response = await _tools.deletePrelevement(id);
     if (response.statusCode == 204) {
-      await recupPortefeuilles();
+      await recupPrelevements();
       setState(() {
         build(context);
       });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Portefeuille supprimé.'),
+        content: Text('Prelevement supprimé.'),
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -135,7 +133,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: recupPortefeuilles(),
+        future: recupPrelevements(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Column col = Column();
           Container container = Container();
@@ -148,10 +146,10 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal.shade400),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/routePortefeuilleAjout',
+                  Navigator.pushNamed(context, '/routeAjoutPrelevement',
                       arguments: '');
                 },
-                child: const Text('Ajouter un nouveau portefeuille virtuel'),
+                child: const Text('Ajouter une nouvelle action mensuel'),
               ),
             );
           } else if (snapshot.hasError) {

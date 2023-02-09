@@ -71,7 +71,6 @@ class AjoutModifPageState extends State<AjoutModifPage> {
             await _tools.getPortefeuilleById(_idPortefeuille.toString());
         if (responsePortefeuille.statusCode == 200) {
           var portefeuille = convert.jsonDecode(responsePortefeuille.body);
-          print(portefeuille['solde']);
           double newSoldePorteuille =
               double.parse(portefeuille['solde'].toString()) - montant;
           await _tools.patchSoldeByPortefeuilleId(
@@ -83,6 +82,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
       String? userId = await Local.storage.read(key: 'id');
       double newSolde = solde - montant;
       var patch = await _tools.patchSoldeByUserId(newSolde, userId!);
+      await Local.storage.write(key: 'solde', value: newSolde.toString());
       if (patch.statusCode == 200) {
         await Local.storage.write(key: 'solde', value: newSolde.toString());
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -122,6 +122,7 @@ class AjoutModifPageState extends State<AjoutModifPage> {
       String? userId = await Local.storage.read(key: 'id');
       double newSolde = solde + montant;
       var patch = await _tools.patchSoldeByUserId(newSolde, userId!);
+      await Local.storage.write(key: 'solde', value: newSolde.toString());
       if (patch.statusCode == 200) {
         await Local.storage.write(key: 'solde', value: newSolde.toString());
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -56,11 +56,13 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> recupInfos() async {
+    var depenses = await _tools.getDepensesByUserID();
+    var rentrees = await _tools.getRentreesByUserID();
+    var prelevements = await _tools.getPrelevementsByUserId();
+    await checkPrelevements(prelevements);
     String? s = await Local.storage.read(key: 'solde');
     _solde = double.parse(s!);
     _solde = double.parse(_solde.toStringAsFixed(2));
-    var depenses = await _tools.getDepensesByUserID();
-    var rentrees = await _tools.getRentreesByUserID();
     _list = depenses + rentrees;
     if (_list.isNotEmpty) {
       _list.sort((a, b) {
@@ -69,6 +71,54 @@ class MyHomePageState extends State<MyHomePage> {
       });
     }
     return '';
+  }
+
+  Future<void> checkPrelevements(List<dynamic> prelevements) async {
+    for (var elt in prelevements) {
+      DateTime dateElt = DateTime.parse(elt['datePaiement']);
+      while (dateElt.isBefore(DateTime.now())) {
+        if (elt['estDebit']) {
+          await addDepense(elt, dateElt);
+        } else {
+          await addRentree(elt, dateElt);
+        }
+        DateTime newDate =
+            DateTime(dateElt.year, dateElt.month + 1, dateElt.day);
+        await _tools.patchDatePaiementPrelevement(
+            DateFormat('dd-MM-yyyy').format(newDate), elt['id'].toString());
+        dateElt = newDate;
+        print(dateElt);
+      }
+    }
+  }
+
+  Future<void> addDepense(var elt, DateTime dateElt) async {
+    double montant = double.parse(elt['montant'].toString());
+    String date = DateFormat('dd-MM-yyyy hh:mm:ss').format(dateElt);
+
+    await _tools.postDepense(montant, elt['titre'], date,
+        _tools.splitUri(elt['categorieDebit'].toString()), '', null);
+    String? soldeStr = await Local.storage.read(key: 'solde');
+    double solde = double.parse(soldeStr!);
+    String? userId = await Local.storage.read(key: 'id');
+    double newSolde = solde - montant;
+    var patch = await _tools.patchSoldeByUserId(newSolde, userId!);
+
+    await Local.storage.write(key: 'solde', value: newSolde.toString());
+  }
+
+  Future<void> addRentree(var elt, DateTime dateElt) async {
+    double montant = double.parse(elt['montant'].toString());
+    String date = DateFormat('dd-MM-yyyy hh:mm:ss').format(dateElt);
+    var response = await _tools.postRentree(montant, elt['titre'], date,
+        _tools.splitUri(elt['categorieCredit'].toString()), '');
+    String? soldeStr = await Local.storage.read(key: 'solde');
+    double solde = double.parse(soldeStr!);
+    String? userId = await Local.storage.read(key: 'id');
+    double newSolde = solde + montant;
+    var patch = await _tools.patchSoldeByUserId(newSolde, userId!);
+
+    await Local.storage.write(key: 'solde', value: newSolde.toString());
   }
 
   Widget buildListDepenses() {
@@ -106,7 +156,8 @@ class MyHomePageState extends State<MyHomePage> {
     return SizedBox(
       child: Column(
         children: <Widget>[
-          const Text('Votre solde actuelle:'),
+          const Text('Votre solde actuelle:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
           Text(
             '${_solde.toString()} €',
             style: TextStyle(
@@ -124,12 +175,18 @@ class MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Column colActivites = Column();
         SizedBox sbsolde = const SizedBox();
-        FloatingActionButton fab =
-            FloatingActionButton(onPressed: popUpInfo, child: null);
+        FloatingActionButton fab = FloatingActionButton(
+          onPressed: popUpInfo,
+          child: null,
+          backgroundColor: Colors.teal.shade400,
+        );
         if (snapshot.hasData) {
           sbsolde = buildSolde();
           fab = FloatingActionButton(
-              onPressed: popUpInfo, child: const Icon(Icons.info_outline));
+            onPressed: popUpInfo,
+            backgroundColor: Colors.teal.shade400,
+            child: const Icon(Icons.info_outline),
+          );
           colActivites = Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -165,6 +222,7 @@ class MyHomePageState extends State<MyHomePage> {
           body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 Container(alignment: Alignment.center, child: colActivites),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 Row(

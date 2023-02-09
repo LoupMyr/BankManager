@@ -16,6 +16,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
   var _action;
   final Tools _tools = Tools();
   String _categorieName = '';
+  List<dynamic> _lesDepenses = List.empty(growable: true);
 
   Future<void> recupCategorie() async {
     String categorieStr = '';
@@ -25,6 +26,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
       categorieStr = _action['categorie'];
     }
     var response = await _tools.getCategorieById(_tools.splitUri(categorieStr));
+    _lesDepenses = await _tools.getPortefeuillesByUserId();
     if (response.statusCode == 200) {
       var categorie = convert.jsonDecode(response.body);
       _categorieName = categorie['libelle'];
@@ -33,6 +35,7 @@ class DetailsActionPageState extends State<DetailsActionPage> {
 
   Column buildBody() {
     String remarques = '/';
+    SizedBox portefeuille = const SizedBox();
     String person = '';
     String personStr = 'Débiteur: ';
     String symbol = '-';
@@ -47,24 +50,52 @@ class DetailsActionPageState extends State<DetailsActionPage> {
     } else {
       person = _action['debiteur'];
     }
+    try {
+      String portefeuilleId = _tools.splitUri(_action['portefeuille']);
+      print(portefeuilleId);
+      for (var elt in _lesDepenses) {
+        if (elt['id'].toString() == portefeuilleId) {
+          portefeuille = SizedBox(
+            height: MediaQuery.of(context).size.height * 0.1,
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade400),
+              onPressed: () => Navigator.pushNamed(
+                  context, '/routePortefeuille',
+                  arguments: elt),
+              child: Text(elt['titre']),
+            ),
+          );
+        }
+      }
+    } catch (e) {}
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         createText('Type:', _action['@type']),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
         createText(personStr, person),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
         createText('Remarques: ', remarques),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
         createText('Montant: ', '$symbol ${_action['montant'].toString()}€'),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
         createText(
             'Date de paiement: ',
             DateFormat('dd-MM-yyyy')
                 .format(DateTime.parse(_action['datePaiement']))),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
         createText('Catégorie: ', _categorieName),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
+        portefeuille,
       ],
     );
   }
 
   RichText createText(String title, String content) {
     return RichText(
+      textAlign: TextAlign.center,
       text: TextSpan(
           text: title,
           style: const TextStyle(

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class Widgets {
   static Widget createDrawer(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.5,
+      width: MediaQuery.of(context).size.width * 0.6,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -12,7 +12,13 @@ class Widgets {
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
             ),
-            child: const FlutterLogo(),
+            child: InkWell(
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, '/routeHome'),
+              child: const Image(
+                image: AssetImage('assets/logo.png'),
+              ),
+            ),
           ),
           ListTile(
             title: Row(
@@ -43,7 +49,7 @@ class Widgets {
               children: <Widget>[
                 const Icon(Icons.monetization_on_outlined),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.30,
+                  width: MediaQuery.of(context).size.width * 0.40,
                   child: const Text(
                     ' Ajouter un débit / crédit',
                     overflow: TextOverflow.ellipsis,
@@ -52,6 +58,22 @@ class Widgets {
               ],
             ),
             onTap: () => Navigator.pushReplacementNamed(context, '/routeAjout'),
+          ),
+          ListTile(
+            title: Row(
+              children: <Widget>[
+                const Icon(Icons.event_repeat),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.40,
+                  child: const Text(
+                    ' Vos mensualités',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            onTap: () => Navigator.pushReplacementNamed(
+                context, '/routePrelevementList'),
           ),
           const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
           ListTile(

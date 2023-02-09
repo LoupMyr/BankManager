@@ -31,6 +31,13 @@ class Tools {
     );
   }
 
+  Future<http.Response> getPrelevements() async {
+    return await http.get(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/prelevements'),
+    );
+  }
+
   Future<http.Response> getCategorieById(String idCategorie) async {
     return await http.get(Uri.parse(
         'https://s3-4428.nuage-peda.fr/apiBank/public/api/categories/$idCategorie'));
@@ -77,6 +84,22 @@ class Tools {
     List<dynamic> tab = List.empty(growable: true);
     String? idUser = await Local.storage.read(key: 'id');
     var response = await getPortefeuilles();
+    if (response.statusCode == 200) {
+      var depenses = convert.jsonDecode(response.body);
+      for (var elt in depenses['hydra:member']) {
+        String idUserElt = this.splitUri(elt['user']);
+        if (idUserElt == idUser) {
+          tab.add(elt);
+        }
+      }
+    }
+    return tab;
+  }
+
+  Future<List<dynamic>> getPrelevementsByUserId() async {
+    List<dynamic> tab = List.empty(growable: true);
+    String? idUser = await Local.storage.read(key: 'id');
+    var response = await getPrelevements();
     if (response.statusCode == 200) {
       var depenses = convert.jsonDecode(response.body);
       for (var elt in depenses['hydra:member']) {
@@ -196,6 +219,38 @@ class Tools {
     );
   }
 
+  Future<http.Response> postPrelevement(String titre, double montant,
+      String date, bool estDebit, String idCategorie) async {
+    String? idUser = await Local.storage.read(key: 'id');
+    Map<String, dynamic> categorie = {};
+    if (estDebit) {
+      categorie = {
+        "categorieDebit": '/apiBank/public/api/categories/$idCategorie'
+      };
+    } else {
+      categorie = {
+        "categorieCredit": '/apiBank/public/api/categorie_rentrees/$idCategorie'
+      };
+    }
+    final Map<String, dynamic> body = {
+      "montant": montant,
+      "user": "/apiBank/public/api/users/${idUser!}",
+      "datePaiement": date,
+      "estDebit": estDebit,
+      "titre": titre,
+      ...categorie,
+    };
+    return await http.post(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/prelevements'),
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
   Future<http.Response> postUser(String email, String password, String nom,
       String prenom, double solde) async {
     return http.post(
@@ -253,6 +308,60 @@ class Tools {
         body: json);
   }
 
+  Future<http.Response> patchPrelevement(
+    String titre,
+    double montant,
+    String date,
+    bool estDebit,
+    String idCategorie,
+    String idPrelevement,
+  ) async {
+    Map<String, dynamic> categorieDebit = {"categorieDebit": null};
+    Map<String, dynamic> categorieCredit = {"categorieCredit": null};
+    if (estDebit) {
+      categorieDebit = {
+        "categorieDebit": '/apiBank/public/api/categories/$idCategorie'
+      };
+    } else {
+      categorieCredit = {
+        "categorieCredit": '/apiBank/public/api/categorie_rentrees/$idCategorie'
+      };
+    }
+    final Map<String, dynamic> body = {
+      "montant": montant,
+      "datePaiement": date,
+      "estDebit": estDebit,
+      "titre": titre,
+      ...categorieDebit,
+      ...categorieCredit,
+    };
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/prelevements/$idPrelevement'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> patchDatePaiementPrelevement(
+      String date, String idPrelevement) async {
+    final Map<String, dynamic> body = {
+      "datePaiement": date,
+    };
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/prelevements/$idPrelevement'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
   Future<http.Response> patchPortefeuille(
       String titre,
       double montant,
@@ -295,6 +404,13 @@ class Tools {
     return await http.delete(
       Uri.parse(
           'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles/$id'),
+    );
+  }
+
+  Future<http.Response> deletePrelevement(String id) async {
+    return await http.delete(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/prelevements/$id'),
     );
   }
 

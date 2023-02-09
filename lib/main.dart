@@ -1,7 +1,9 @@
 import 'package:bank_tracker/views/ajoutModifPage.dart';
+import 'package:bank_tracker/views/mensualites/ajoutPrelevementPage.dart';
 import 'package:bank_tracker/views/details%20&%20graphes/detailsActionPage.dart';
 import 'package:bank_tracker/views/details%20&%20graphes/detailsMoisPage.dart';
 import 'package:bank_tracker/views/details%20&%20graphes/graphePage.dart';
+import 'package:bank_tracker/views/mensualites/prelevementListPage.dart';
 import 'package:bank_tracker/views/myhomepage.dart';
 import 'package:bank_tracker/views/portefeuille/ajouterPortefeuillePage.dart';
 import 'package:bank_tracker/views/portefeuille/portefeuilleListPage.dart';
@@ -27,7 +29,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         darkTheme: ThemeData(
-          buttonColor: Colors.grey,
           brightness: Brightness.dark,
         ),
         themeMode: ThemeMode.dark,
@@ -55,6 +56,10 @@ class MyApp extends StatelessWidget {
               PortefeuilleAjoutPage(title: "Ajouter un portefeuille virtuel"),
           '/routePortefeuille': (BuildContext context) =>
               const PortefeuillePage(title: "Détails portefeuille"),
+          '/routeAjoutPrelevement': (BuildContext context) =>
+              const AjoutPrelevementPage(title: "Ajout mensualité"),
+          '/routePrelevementList': (BuildContext context) =>
+              const PrelevementListPage(title: "Liste de vos mensualités"),
         });
   }
 }
