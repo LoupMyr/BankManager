@@ -83,8 +83,25 @@ class DetailsMoisPageState extends State<DetailsMoisPage> {
   void updateColumn(TotalPerCategories categorie) {
     List<Widget> tabChildren = List.empty(growable: true);
     for (var depense in categorie.getDepenses()) {
-      tabChildren = Widgets.createList(categorie.getDepenses().length,
-          categorie.getDepenses(), context, 0.6, 0.5);
+      tabChildren.add(Divider(
+        thickness: 2,
+      ));
+      tabChildren.add(
+        ListTile(
+          title: Text('-${depense['montant'].toString()}€'),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(depense['debiteur']),
+              depense['remarque'] != null
+                  ? Text(depense['remarque']!)
+                  : const Text('/'),
+            ],
+          ),
+          onTap: () => Navigator.pushNamed(context, '/routeDetailAction',
+              arguments: depense),
+        ),
+      );
     }
     setState(() {
       _listView = ListView(
