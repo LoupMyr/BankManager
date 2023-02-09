@@ -5,6 +5,7 @@ import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert' as convert;
 
 class AjoutModifPage extends StatefulWidget {
   AjoutModifPage({super.key, required this.title});
@@ -63,6 +64,20 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         _remarquesDepense,
         _idPortefeuille);
     if (response.statusCode == 201) {
+      if (_idPortefeuille != null) {
+        var depense = convert.jsonDecode(response.body);
+        int depenseId = depense['id'];
+        var responsePortefeuille =
+            await _tools.getPortefeuilleById(_idPortefeuille.toString());
+        if (responsePortefeuille.statusCode == 200) {
+          var portefeuille = convert.jsonDecode(responsePortefeuille.body);
+          print(portefeuille['solde']);
+          double newSoldePorteuille =
+              double.parse(portefeuille['solde'].toString()) - montant;
+          await _tools.patchSoldeByPortefeuilleId(
+              newSoldePorteuille, _idPortefeuille.toString());
+        }
+      }
       String? soldeStr = await Local.storage.read(key: 'solde');
       double solde = double.parse(soldeStr!);
       String? userId = await Local.storage.read(key: 'id');

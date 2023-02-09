@@ -1,7 +1,6 @@
 import 'package:bank_tracker/class/local.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
-
 import 'package:intl/intl.dart';
 
 class Tools {
@@ -35,6 +34,11 @@ class Tools {
   Future<http.Response> getCategorieById(String idCategorie) async {
     return await http.get(Uri.parse(
         'https://s3-4428.nuage-peda.fr/apiBank/public/api/categories/$idCategorie'));
+  }
+
+  Future<http.Response> getPortefeuilleById(String idPortefeuille) async {
+    return await http.get(Uri.parse(
+        'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles/$idPortefeuille'));
   }
 
   Future<List<dynamic>> getDepensesByUserID() async {
@@ -140,15 +144,17 @@ class Tools {
     );
   }
 
-  Future<http.Response> postPortefeuille(
-      String titre, double montant, int duree, int categorieId) async {
+  Future<http.Response> postPortefeuille(String titre, double montant,
+      String dateDebut, String dateFin, int categorieId) async {
     String? idUser = await Local.storage.read(key: 'id');
     String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final Map<String, dynamic> body = {
       "titre": titre,
       "user": "/apiBank/public/api/users/${idUser!}",
-      "montant": montant,
-      "duree": duree,
+      "montantInitial": montant,
+      "dateDebut": dateDebut,
+      "dateFin": dateFin,
+      "solde": montant,
       "categorie": '/apiBank/public/api/categories/$categorieId',
       "dateCreation": date
     };
@@ -234,12 +240,31 @@ class Tools {
         body: json);
   }
 
-  Future<http.Response> patchPortefeuille(String titre, double montant,
-      int duree, int categorieId, String idPortefeuille) async {
+  Future<http.Response> patchSoldeByPortefeuilleId(
+      double newSolde, String idPortefeuille) async {
+    var json = convert.jsonEncode(<String, dynamic>{"solde": newSolde});
+    return await http.patch(
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/apiBank/public/api/portefeuilles/$idPortefeuille'),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
+  Future<http.Response> patchPortefeuille(
+      String titre,
+      double montant,
+      String dateDebut,
+      String dateFin,
+      int categorieId,
+      String idPortefeuille) async {
     final Map<String, dynamic> body = {
       "titre": titre,
-      "montant": montant,
-      "duree": duree,
+      "montantInitial": montant,
+      "dateDebut": dateDebut,
+      "dateFin": dateFin,
       "categorie": '/apiBank/public/api/categories/$categorieId',
     };
     return await http.patch(
@@ -308,12 +333,11 @@ class Tools {
     return list;
   }
 
-  int convertToDays(int duree, int idDuree) {
-    if (idDuree == 1) {
-      duree = duree * 31;
-    } else if (idDuree == 2) {
-      duree = duree * 365;
+  bool estExpire(var elt) {
+    bool result = false;
+    if (DateTime.parse(elt['dateFin']).compareTo(DateTime.now()) < 0) {
+      result = true;
     }
-    return duree;
+    return result;
   }
 }

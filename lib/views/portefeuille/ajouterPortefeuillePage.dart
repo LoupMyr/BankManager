@@ -3,6 +3,7 @@ import 'package:bank_tracker/class/tools.dart';
 import 'package:bank_tracker/class/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class PortefeuilleAjoutPage extends StatefulWidget {
   PortefeuilleAjoutPage({super.key, required this.title});
@@ -29,13 +30,66 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
   final _fieldTitre = TextEditingController();
   final _fieldMontant = TextEditingController();
   final _fieldDuree = TextEditingController();
+  DateTime _selectedDateDebut = DateTime.now();
+  String _dateDebut = '';
+  DateTime _selectedDateFin = DateTime.now();
+  String _dateFin = '';
+  String _dateDebutPrint = '';
+  String _dateFinPrint = '';
+
+  IconButton selectDateDebut() {
+    return IconButton(
+      tooltip: 'Date de début',
+      hoverColor: Colors.transparent,
+      onPressed: () async {
+        DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: _selectedDateDebut,
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101));
+        if (pickedDate != null) {
+          pickedDate.add(const Duration(hours: 1));
+          String formattedDate =
+              DateFormat('dd-MM-yyyy hh:mm:ss').format(pickedDate);
+          setState(() {
+            _dateDebut = formattedDate;
+            _dateDebutPrint = DateFormat('dd-MM-yyyy').format(pickedDate);
+            _selectedDateDebut = pickedDate;
+          });
+        }
+      },
+      icon: const Icon(Icons.calendar_today),
+    );
+  }
+
+  IconButton selectDateFin() {
+    return IconButton(
+      tooltip: 'Date de fin',
+      hoverColor: Colors.transparent,
+      onPressed: () async {
+        DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: _selectedDateFin,
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101));
+        if (pickedDate != null) {
+          pickedDate.add(const Duration(hours: 1));
+          String formattedDate =
+              DateFormat('dd-MM-yyyy hh:mm:ss').format(pickedDate);
+          setState(() {
+            _dateFin = formattedDate;
+            _dateFinPrint = DateFormat('dd-MM-yyyy').format(pickedDate);
+            _selectedDateFin = pickedDate;
+          });
+        }
+      },
+      icon: const Icon(Icons.calendar_today),
+    );
+  }
 
   Future<String> sendRequest() async {
-    if (_idSelectDuree != 0) {
-      _duree = _tools.convertToDays(_duree, _idSelectDuree);
-    }
     var response = await _tools.postPortefeuille(
-        _titre, _montant, _duree, _idSelectCategorie);
+        _titre, _montant, _dateDebut, _dateFin, _idSelectCategorie);
     if (response.statusCode == 201) {
       Navigator.restorablePopAndPushNamed(context, '/routePortefeuilleList');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -50,13 +104,10 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
   }
 
   Future<String> sendPatchRequest() async {
-    if (_idSelectDuree != 0) {
-      _duree = _tools.convertToDays(_duree, _idSelectDuree);
-    }
-    var response = await _tools.patchPortefeuille(
-        _titre, _montant, _duree, _idSelectCategorie, _arg['id'].toString());
+    var response = await _tools.patchPortefeuille(_titre, _montant, _dateDebut,
+        _dateFin, _idSelectCategorie, _arg['id'].toString());
     if (response.statusCode == 200) {
-      Navigator.restorablePopAndPushNamed(context, '/routePortefeuilleList');
+      Navigator.pushNamed(context, '/routePortefeuilleList');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Portefeuille modifié'),
       ));
@@ -69,12 +120,22 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
   }
 
   void fillFields() {
+    _hasRecup = true;
     widget.title = 'Modifier un portefeuille virtuel';
     _fieldTitre.value = TextEditingValue(text: _arg['titre']);
-    _fieldMontant.value = TextEditingValue(text: _arg['montant'].toString());
+    _fieldMontant.value =
+        TextEditingValue(text: _arg['montantInitial'].toString());
     _fieldDuree.value = TextEditingValue(text: _arg['duree'].toString());
     int idCate = int.parse(_tools.splitUri(_arg['categorie']));
     setState(() {
+      _dateDebut = _arg['dateDebut'];
+      _dateDebutPrint =
+          DateFormat('dd-MM-yyyy').format(DateTime.parse(_arg['dateDebut']));
+      _selectedDateDebut = DateTime.parse(_arg['dateDebut']);
+      _dateFin = _arg['dateFin'];
+      _dateFinPrint =
+          DateFormat('dd-MM-yyyy').format(DateTime.parse(_arg['dateFin']));
+      _selectedDateFin = DateTime.parse(_arg['dateFin']);
       _idSelectCategorie = idCate;
       _dropdownValueCategorie = Strings.listCategories[idCate];
     });
@@ -124,7 +185,7 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
                   child: TextFormField(
                     controller: _fieldMontant,
                     decoration: const InputDecoration(
-                      label: Text('Montant du portefeuille: '),
+                      label: Text('Montant inital du portefeuille: '),
                     ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
@@ -142,50 +203,22 @@ class PortefeuilleAjoutPageState extends State<PortefeuilleAjoutPage> {
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    Text('Date de début:'),
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
+                    Text('Date de fin:'),
+                  ],
+                ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: TextFormField(
-                        controller: _fieldDuree,
-                        decoration: InputDecoration(
-                          label: const Text('Durée: '),
-                          suffix: DropdownButton(
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColorLight,
-                                fontSize: 14.5),
-                            menuMaxHeight: 300,
-                            value: _dropdownValueDuree,
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            items: Strings.listDuree
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              _idSelectDuree =
-                                  Strings.listDuree.indexOf(newValue!);
-                              setState(() {
-                                _dropdownValueDuree = newValue;
-                              });
-                            },
-                          ),
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        validator: (valeur) {
-                          if (valeur == null || valeur.isEmpty) {
-                            _duree = -1;
-                          } else {
-                            _duree = int.tryParse(valeur)!;
-                          }
-                        },
-                      ),
-                    ),
+                    Text(_dateDebutPrint),
+                    selectDateDebut(),
                     const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10)),
+                    selectDateFin(),
+                    Text(_dateFinPrint),
                   ],
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),

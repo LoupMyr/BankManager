@@ -38,11 +38,16 @@ class PortefeuillePageState extends State<PortefeuillePage> {
     return Container(
       child: Column(children: <Widget>[
         Text(_arg['titre']),
+        Text('${_arg['montantInitial'].toString()} €'),
+        Text('${_arg['solde'].toString()} €'),
         Text(Strings
             .listCategories[int.parse(_tools.splitUri(_arg['categorie']))]),
-        Text(DateFormat('yyyy-MM-dd')
-            .format(DateTime.parse(_arg['dateCreation']))),
-        Text('${_arg['duree'].toString()} jours'),
+        Text(
+            'Date Création: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['dateCreation']))}'),
+        Text(
+            'Date début: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['dateDebut']))}'),
+        Text(
+            'Date fin: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['dateFin']))}'),
       ]),
     );
   }

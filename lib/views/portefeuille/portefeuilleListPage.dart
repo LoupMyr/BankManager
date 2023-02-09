@@ -24,6 +24,11 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
     List<Widget> tab = List.empty(growable: true);
     if (_listPortefeuilles.isNotEmpty) {
       for (var elt in _listPortefeuilles) {
+        TextStyle ts = const TextStyle(decoration: TextDecoration.none);
+        if (_tools.estExpire(elt)) {
+          ts = const TextStyle(
+              decoration: TextDecoration.lineThrough, decorationThickness: 3);
+        }
         tab.add(
           Row(
             children: [
@@ -36,7 +41,7 @@ class PortefeuilleListPageState extends State<PortefeuilleListPage> {
                   onPressed: () => Navigator.pushNamed(
                       context, '/routePortefeuille',
                       arguments: elt),
-                  child: Text(elt['titre']),
+                  child: Text(elt['titre'], style: ts),
                 ),
               ),
               IconButton(
