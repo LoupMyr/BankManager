@@ -130,11 +130,17 @@ class AjoutPrelevementPageState extends State<AjoutPrelevementPage> {
             int.parse(_tools.splitUri(_arg['categorieDebit']));
         _dropdownValueCategorieDebit =
             Strings.listCategories[_idSelectCategorieDebit];
+        setState(() {
+          changeSymbol();
+        });
       } else {
         _idSelectCategorieCredit =
             int.parse(_tools.splitUri(_arg['categorieCredit']));
         _dropdownValueCategorieCredit =
             Strings.listCategoriesRentree[_idSelectCategorieCredit];
+        setState(() {
+          changeSymbol();
+        });
       }
       _hasRecup = true;
     });
@@ -232,7 +238,7 @@ class AjoutPrelevementPageState extends State<AjoutPrelevementPage> {
                     child: ListTile(
                       title: const Text('Débit'),
                       leading: Radio(
-                        value: false,
+                        value: !_estDebit,
                         groupValue: _value,
                         onChanged: (value) {
                           setState(() {
@@ -250,7 +256,7 @@ class AjoutPrelevementPageState extends State<AjoutPrelevementPage> {
                     child: ListTile(
                       title: const Text('Crédit'),
                       leading: Radio(
-                        value: true,
+                        value: _estDebit,
                         groupValue: _value,
                         onChanged: (value) {
                           setState(() {

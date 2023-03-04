@@ -400,6 +400,46 @@ class Tools {
     );
   }
 
+  Future<http.Response> patchEmail(String email, String idUser) async {
+    Map<String, dynamic> body = {"email": email};
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/users/$idUser'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> patchPrenom(String prenom, String idUser) async {
+    Map<String, dynamic> body = {"prenom": prenom};
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/users/$idUser'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> patchNom(String nom, String idUser) async {
+    String? idUser = await Local.storage.read(key: 'id');
+    Map<String, dynamic> body = {"nom": nom};
+    return await http.patch(
+      Uri.parse(
+          'https://s3-4428.nuage-peda.fr/apiBank/public/api/users/$idUser'),
+      headers: <String, String>{
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: convert.jsonEncode(body),
+    );
+  }
+
   Future<http.Response> deletePortefeuille(String id) async {
     return await http.delete(
       Uri.parse(

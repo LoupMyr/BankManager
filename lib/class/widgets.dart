@@ -34,6 +34,15 @@ class Widgets {
           const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
           ListTile(
             title: Row(
+              children: const <Widget>[Icon(Icons.person), Text(' Profil')],
+            ),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/routeProfil');
+            },
+          ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
+          ListTile(
+            title: Row(
               children: const <Widget>[
                 Icon(Icons.align_vertical_bottom_rounded),
                 Text(' Graphes'),

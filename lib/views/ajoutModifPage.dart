@@ -90,12 +90,12 @@ class AjoutModifPageState extends State<AjoutModifPage> {
         ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Une erreur est survenue (PATCH) ${patch.statusCode}'),
+          content: Text('Une erreur est survenue'),
         ));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Une erreur est survenue (POST) ${response.statusCode}'),
+        content: Text('Une erreur est survenue'),
       ));
     }
   }

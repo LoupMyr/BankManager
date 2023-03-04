@@ -11,6 +11,7 @@ import 'package:bank_tracker/views/portefeuille/portefeuillePage.dart';
 import 'package:bank_tracker/views/recapPage.dart';
 import 'package:bank_tracker/views/user/connexionPage.dart';
 import 'package:bank_tracker/views/user/inscriptionPage.dart';
+import 'package:bank_tracker/views/user/profilPage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Bank\'Tracker',
+        title: 'Bank\'Manager',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.light,
@@ -60,6 +61,8 @@ class MyApp extends StatelessWidget {
               const AjoutPrelevementPage(title: "Ajout mensualité"),
           '/routePrelevementList': (BuildContext context) =>
               const PrelevementListPage(title: "Liste de vos mensualités"),
+          '/routeProfil': (BuildContext context) =>
+              const ProfilPage(title: "Profil"),
         });
   }
 }
