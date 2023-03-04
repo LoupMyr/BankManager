@@ -5,15 +5,15 @@ import 'package:bank_tracker/class/tools.dart';
 import 'package:bank_tracker/class/widgets.dart';
 import 'package:intl/intl.dart';
 
-class PortefeuillePage extends StatefulWidget {
-  const PortefeuillePage({super.key, required this.title});
+class PrelevementPage extends StatefulWidget {
+  const PrelevementPage({super.key, required this.title});
   final String title;
 
   @override
-  State<PortefeuillePage> createState() => PortefeuillePageState();
+  State<PrelevementPage> createState() => PrelevementPageState();
 }
 
-class PortefeuillePageState extends State<PortefeuillePage> {
+class PrelevementPageState extends State<PrelevementPage> {
   Tools _tools = Tools();
   List<dynamic> _listDepenses = List.empty(growable: true);
   var _arg;
@@ -23,60 +23,29 @@ class PortefeuillePageState extends State<PortefeuillePage> {
     return '';
   }
 
-  Column buildCol() {
-    List<Widget> tab = List.empty(growable: true);
-    if (_listDepenses.isNotEmpty) {
-      tab = Widgets.createList(
-          _listDepenses.length, _listDepenses, context, 0.6, 0.3);
-    } else {
-      tab = [const Text('Aucune dépenses enregistré dans ce portefeuille.')];
-    }
-    return Column(children: tab);
-  }
-
   Container buildDetails() {
+    String categorie = '';
+    try {
+      categorie = Strings
+          .listCategories[int.parse(_tools.splitUri(_arg['categorieDebit']))];
+    } catch (e) {
+      categorie = Strings.listCategoriesRentree[
+          int.parse(_tools.splitUri(_arg['categorieCredit']))];
+    }
     return Container(
       child: Column(children: <Widget>[
-        createRow('Titre:', _arg['titre'], Icon(Icons.text_fields_outlined), 0),
-        createRow('Montant initial:', _arg['montantInitial'],
-            Icon(Icons.attach_money_outlined), 1),
-        createRow('Solde actuelle:', _arg['solde'],
-            Icon(Icons.money_off_csred_outlined), 2),
+        createRow('Titre:', _arg['titre'], Icon(Icons.text_fields_outlined)),
+        createRow('Catégorie:', categorie, Icon(Icons.bookmark_outline)),
         createRow(
-            'Catégorie:',
-            Strings
-                .listCategories[int.parse(_tools.splitUri(_arg['categorie']))],
-            Icon(Icons.bookmark_outline),
-            3),
-        createRow(
-            'Date de création:',
-            DateFormat('yyyy-MM-dd')
-                .format(DateTime.parse(_arg['dateCreation'])),
-            Icon(Icons.calendar_today_outlined),
-            4),
-        createRow(
-            'Date de debut:',
-            DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['dateDebut'])),
-            Icon(Icons.date_range),
-            5),
-        createRow(
-            'Date de fin:',
-            DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['dateFin'])),
-            Icon(Icons.date_range),
-            6),
-        Row(
-          children: [
-            Text(
-              'Liste des dépenses associé à ce portefeuille:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            )
-          ],
+          'Date de paiement:',
+          DateFormat('yyyy-MM-dd').format(DateTime.parse(_arg['datePaiement'])),
+          Icon(Icons.calendar_today_outlined),
         ),
       ]),
     );
   }
 
-  Container createRow(String txt, var elt, Icon icon, int idElt) {
+  Container createRow(String txt, var elt, Icon icon) {
     return Container(
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -90,21 +59,13 @@ class PortefeuillePageState extends State<PortefeuillePage> {
         ]),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Text(
-            guessStr(elt, idElt),
+            elt,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.blueGrey.shade300, fontSize: 18),
           ),
         ]),
       ]),
     );
-  }
-
-  String guessStr(var elt, int idElt) {
-    String txt = '${elt.toString()}\n';
-    if (idElt == 1 || idElt == 2) {
-      txt = '$elt €\n';
-    }
-    return txt;
   }
 
   @override
@@ -116,14 +77,8 @@ class PortefeuillePageState extends State<PortefeuillePage> {
           Column col = Column();
           Container container = Container();
           if (snapshot.hasData) {
-            col = buildCol();
             container = buildDetails();
           } else if (snapshot.hasError) {
-            col = Column(
-              children: const <Widget>[
-                Icon(Icons.error_outline, color: Colors.red),
-              ],
-            );
           } else {
             col = Column(
               children: <Widget>[
@@ -144,8 +99,7 @@ class PortefeuillePageState extends State<PortefeuillePage> {
               child: Center(
                 child: Column(children: <Widget>[
                   container,
-                  const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
-                  col
+                  col,
                 ]),
               ),
             ),

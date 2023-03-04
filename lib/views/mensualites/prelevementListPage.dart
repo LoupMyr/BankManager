@@ -40,7 +40,9 @@ class PrelevementListPageState extends State<PrelevementListPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal.shade400),
-                  onPressed: () => null,
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/routePrelevementDetails',
+                      arguments: elt),
                   child: Text(elt['titre']),
                 ),
               ),
