@@ -1,4 +1,4 @@
-# bank_tracker
+# bank_manager
 
 A new Flutter project.
 
